@@ -1,0 +1,12 @@
+node_modules
+public/build
+public/hot
+vendor
+storage
+bootstrap/cache
+bootstrap/ssr
+composer.lock
+package-lock.json
+*.min.*
+_ide_helper*.php
+.phpstorm.meta.php
