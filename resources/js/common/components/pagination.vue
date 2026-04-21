@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps<{
     currentPage: number;
@@ -29,22 +30,23 @@ function go(page: number) {
     >
         <button
             type="button"
-            class="rounded border border-gray-300 bg-white px-3 py-1.5 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            class="btn-secondary h-9 w-9 !p-0"
             :disabled="!hasPrev || disabled"
             @click="go(currentPage - 1)"
         >
-            Prev
+            <ChevronLeftIcon class="h-4 w-4" />
         </button>
-        <span class="px-2 text-gray-600">
-            Page {{ currentPage }} of {{ lastPage }}
-        </span>
+        <div class="px-2 font-medium text-slate-600">
+            Page <span class="text-slate-900">{{ currentPage }}</span>
+            <span class="text-slate-400"> / {{ lastPage }}</span>
+        </div>
         <button
             type="button"
-            class="rounded border border-gray-300 bg-white px-3 py-1.5 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            class="btn-secondary h-9 w-9 !p-0"
             :disabled="!hasNext || disabled"
             @click="go(currentPage + 1)"
         >
-            Next
+            <ChevronRightIcon class="h-4 w-4" />
         </button>
     </nav>
 </template>

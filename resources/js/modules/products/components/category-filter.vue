@@ -19,17 +19,27 @@ const selected = computed({
 </script>
 
 <template>
-    <label class="flex items-center gap-2 text-sm">
-        <span class="text-gray-600">Category:</span>
+    <div class="relative">
         <select
             v-model.number="selected"
             :disabled="disabled"
-            class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+            class="field w-full appearance-none pl-4 pr-10 sm:w-52"
         >
             <option :value="null">All categories</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
             </option>
         </select>
-    </label>
+        <svg
+            class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+        >
+            <path
+                fill-rule="evenodd"
+                d="M10 14a1 1 0 0 1-.707-.293l-4-4a1 1 0 1 1 1.414-1.414L10 11.586l3.293-3.293a1 1 0 0 1 1.414 1.414l-4 4A1 1 0 0 1 10 14Z"
+                clip-rule="evenodd"
+            />
+        </svg>
+    </div>
 </template>

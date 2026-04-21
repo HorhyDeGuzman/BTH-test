@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid';
 import PublicLayout from '@/common/layouts/public-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
 import { useDebouncedRef } from '@/common/composables';
 import { useProductsApi } from '@/modules/products';
 import { useCategories } from '@/modules/categories';
 import ProductCard from '@/modules/products/components/product-card.vue';
+import ProductCardSkeleton from '@/modules/products/components/product-card-skeleton.vue';
 import CategoryFilter from '@/modules/products/components/category-filter.vue';
 
 const {
@@ -21,11 +23,16 @@ const { items: categories, fetchAll: fetchCategories } = useCategories();
 
 const selectedCategoryId = ref<number | null>(null);
 const currentPage = ref(1);
-
-// Raw input model (immediate) and the debounced value that drives the API.
-// Using two refs lets the input stay responsive while API calls are throttled.
 const searchInput = ref('');
 const debouncedSearch = useDebouncedRef('', 400);
+
+const hasActiveFilters = computed(
+    () => selectedCategoryId.value !== null || debouncedSearch.value !== '',
+);
+
+const isInitialLoad = computed(
+    () => productsLoading.value && products.value.length === 0 && meta.value === null,
+);
 
 watch(searchInput, (value) => {
     debouncedSearch.value = value;
@@ -36,68 +43,145 @@ onMounted(() => {
     fetchList({ page: currentPage.value });
 });
 
-// Single watcher for every input: any change re-issues a request with the
-// latest filter + page + search state.
 watch([selectedCategoryId, currentPage, debouncedSearch], ([categoryId, page, search]) => {
     fetchList({ category_id: categoryId, page, search });
 });
 
-// Changing the category or search term resets to page 1 so the viewer doesn't
-// end up stranded on a page that no longer exists for the filtered subset.
 watch([selectedCategoryId, debouncedSearch], () => {
     if (currentPage.value !== 1) currentPage.value = 1;
 });
+
+function clearFilters() {
+    selectedCategoryId.value = null;
+    searchInput.value = '';
+}
 </script>
 
 <template>
     <Head title="Products" />
 
     <PublicLayout>
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <h1 class="text-2xl font-bold text-gray-900">Product catalog</h1>
-            <div class="flex flex-wrap items-center gap-3">
-                <input
-                    v-model="searchInput"
-                    type="search"
-                    placeholder="Search by name…"
-                    class="w-64 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                />
+        <!-- Hero -->
+        <section class="relative overflow-hidden border-b border-slate-200 bg-white">
+            <div
+                class="absolute inset-0 bg-grid-slate [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,#000_30%,transparent_75%)] opacity-60"
+            />
+            <div
+                class="absolute -top-24 left-1/2 h-72 w-[56rem] -translate-x-1/2 rounded-full bg-brand-gradient opacity-10 blur-3xl"
+            />
+            <div class="container relative py-16 sm:py-24">
+                <div class="mx-auto max-w-2xl text-center">
+                    <span class="chip-brand">Catalog</span>
+                    <h1
+                        class="mt-4 font-display text-4xl font-bold tracking-tightest text-slate-900 sm:text-6xl"
+                    >
+                        Explore our
+                        <span
+                            class="bg-brand-gradient bg-clip-text text-transparent"
+                        >product&nbsp;catalog</span>
+                    </h1>
+                    <p class="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                        Browse, filter and search through our selection. Everything you need,
+                        nothing you don't.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search + filter bar -->
+        <section class="sticky top-16 z-30 border-b border-slate-200 bg-slate-50/80 backdrop-blur">
+            <div class="container flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
+                <div class="relative flex-1">
+                    <MagnifyingGlassIcon
+                        class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
+                        v-model="searchInput"
+                        type="search"
+                        placeholder="Search products by name…"
+                        class="field pl-10"
+                    />
+                </div>
                 <CategoryFilter
                     v-model="selectedCategoryId"
                     :categories="categories"
                     :disabled="productsLoading"
                 />
+                <button
+                    v-if="hasActiveFilters"
+                    type="button"
+                    class="btn-ghost"
+                    @click="clearFilters"
+                >
+                    Reset
+                </button>
             </div>
-        </div>
+        </section>
 
-        <div
-            v-if="productsError"
-            class="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-        >
-            {{ productsError }}
-        </div>
+        <!-- Content -->
+        <section class="container py-10">
+            <div
+                v-if="productsError"
+                class="mb-6 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700"
+            >
+                {{ productsError }}
+            </div>
 
-        <div v-if="productsLoading && products.length === 0" class="py-12 text-center text-gray-500">
-            Loading products…
-        </div>
+            <!-- Skeleton on initial load -->
+            <div
+                v-if="isInitialLoad"
+                class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+                <ProductCardSkeleton v-for="i in 8" :key="i" />
+            </div>
 
-        <div
-            v-else-if="products.length === 0"
-            class="rounded-md border border-dashed border-gray-300 bg-white py-12 text-center text-gray-500"
-        >
-            No products match the current filter.
-        </div>
+            <!-- Empty state -->
+            <div
+                v-else-if="products.length === 0"
+                class="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-20 text-center"
+            >
+                <div
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400"
+                >
+                    <MagnifyingGlassIcon class="h-6 w-6" />
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-slate-900">No products found</h3>
+                <p class="mt-1 text-sm text-slate-500">
+                    Try a different search term or clear the filters.
+                </p>
+                <button
+                    v-if="hasActiveFilters"
+                    type="button"
+                    class="btn-secondary mt-6"
+                    @click="clearFilters"
+                >
+                    Reset filters
+                </button>
+            </div>
 
-        <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <ProductCard v-for="product in products" :key="product.id" :product="product" />
-        </div>
+            <!-- Grid -->
+            <div
+                v-else
+                :class="[
+                    'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 transition-opacity',
+                    productsLoading ? 'opacity-60' : 'opacity-100',
+                ]"
+            >
+                <ProductCard v-for="product in products" :key="product.id" :product="product" />
+            </div>
 
-        <div v-if="meta && meta.last_page > 1" class="mt-8">
-            <Pagination
-                v-model:current-page="currentPage"
-                :last-page="meta.last_page"
-                :disabled="productsLoading"
-            />
-        </div>
+            <div v-if="meta && meta.total > 0" class="mt-10 flex flex-col items-center gap-3">
+                <p class="text-xs text-slate-500">
+                    Showing <span class="font-semibold text-slate-700">{{ meta.from ?? 0 }}</span> –
+                    <span class="font-semibold text-slate-700">{{ meta.to ?? 0 }}</span>
+                    of <span class="font-semibold text-slate-700">{{ meta.total }}</span>
+                </p>
+                <Pagination
+                    v-model:current-page="currentPage"
+                    :last-page="meta.last_page"
+                    :disabled="productsLoading"
+                />
+            </div>
+        </section>
     </PublicLayout>
 </template>
