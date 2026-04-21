@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
+import { useI18n } from 'vue-i18n';
 import Modal from '@/common/components/modal.vue';
 import type { Product } from '../models';
 
-defineProps<{
+const props = defineProps<{
     show: boolean;
     product: Product | null;
     processing?: boolean;
@@ -13,6 +15,14 @@ const emit = defineEmits<{
     (e: 'close'): void;
     (e: 'confirm'): void;
 }>();
+
+const { t } = useI18n();
+
+const confirmMessage = computed(() =>
+    t('admin.delete_modal.confirm', {
+        name: props.product?.name ?? t('admin.delete_modal.product_fallback'),
+    }),
+);
 </script>
 
 <template>
@@ -25,13 +35,11 @@ const emit = defineEmits<{
                     <ExclamationTriangleIcon class="h-5 w-5" />
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h2 class="text-base font-semibold text-slate-900">Delete product</h2>
+                    <h2 class="text-base font-semibold text-slate-900">
+                        {{ t('admin.delete_modal.title') }}
+                    </h2>
                     <p class="mt-1 text-sm text-slate-600">
-                        Are you sure you want to delete
-                        <span class="font-semibold text-slate-900">{{
-                            product?.name ?? 'this product'
-                        }}</span
-                        >? This can be restored by an administrator later.
+                        {{ confirmMessage }}
                     </p>
                 </div>
             </div>
@@ -43,7 +51,7 @@ const emit = defineEmits<{
                     :disabled="processing"
                     @click="emit('close')"
                 >
-                    Cancel
+                    {{ t('admin.delete_modal.cancel') }}
                 </button>
                 <button
                     type="button"
@@ -71,7 +79,13 @@ const emit = defineEmits<{
                             d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"
                         />
                     </svg>
-                    <span>{{ processing ? 'Deleting…' : 'Delete product' }}</span>
+                    <span>
+                        {{
+                            processing
+                                ? t('admin.delete_modal.deleting')
+                                : t('admin.delete_modal.delete')
+                        }}
+                    </span>
                 </button>
             </div>
         </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import {
     CubeIcon,
     ExclamationCircleIcon,
@@ -8,12 +8,15 @@ import {
     PlusIcon,
     TrashIcon,
 } from '@heroicons/vue/24/outline';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/common/layouts/admin-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
 import { useProductsApi } from '@/modules/products';
 import type { Product } from '@/modules/products';
 import DeleteProductModal from '@/modules/products/components/delete-product-modal.vue';
 import { formatPrice } from '@/modules/products/helpers/format-price';
+
+const { t } = useI18n();
 
 const {
     items: products,
@@ -27,6 +30,8 @@ const {
 const currentPage = ref(1);
 const productToDelete = ref<Product | null>(null);
 const deleting = ref(false);
+
+const pageTitle = computed(() => t('admin.list.page_title'));
 
 onMounted(() => fetchList({ page: currentPage.value }));
 
@@ -59,25 +64,24 @@ async function confirmDelete(): Promise<void> {
 </script>
 
 <template>
-    <Head title="Products · Admin" />
+    <Head :title="pageTitle" />
 
     <AdminLayout>
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Admin
+                    {{ t('admin.list.kicker') }}
                 </p>
                 <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900">
-                    Products
+                    {{ t('admin.list.title') }}
                 </h1>
                 <p v-if="meta" class="mt-1 text-sm text-slate-500">
-                    <span class="font-semibold text-slate-700">{{ meta.total }}</span>
-                    products in catalog
+                    {{ t('admin.list.total', { count: meta.total }) }}
                 </p>
             </div>
             <Link href="/admin/products/create" class="btn-primary">
                 <PlusIcon class="h-4 w-4" />
-                Add product
+                {{ t('admin.list.add') }}
             </Link>
         </div>
 
@@ -96,23 +100,22 @@ async function confirmDelete(): Promise<void> {
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
                         >
-                            Product
+                            {{ t('admin.list.col_product') }}
                         </th>
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
                         >
-                            Category
+                            {{ t('admin.list.col_category') }}
                         </th>
                         <th
                             class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500"
                         >
-                            Price
+                            {{ t('admin.list.col_price') }}
                         </th>
                         <th class="px-5 py-3"></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
-                    <!-- Skeleton rows -->
                     <template v-if="loading && products.length === 0">
                         <tr v-for="i in 6" :key="`s-${i}`">
                             <td class="px-5 py-4">
@@ -139,14 +142,14 @@ async function confirmDelete(): Promise<void> {
                                     <CubeIcon class="h-6 w-6" />
                                 </div>
                                 <h3 class="mt-4 text-base font-semibold text-slate-900">
-                                    No products yet
+                                    {{ t('admin.list.empty_title') }}
                                 </h3>
                                 <p class="mt-1 text-sm text-slate-500">
-                                    Get started by adding your first product to the catalog.
+                                    {{ t('admin.list.empty_description') }}
                                 </p>
                                 <Link href="/admin/products/create" class="btn-primary mt-6">
                                     <PlusIcon class="h-4 w-4" />
-                                    Add product
+                                    {{ t('admin.list.empty_action') }}
                                 </Link>
                             </div>
                         </td>
@@ -192,14 +195,14 @@ async function confirmDelete(): Promise<void> {
                                 <Link
                                     :href="`/admin/products/${product.id}/edit`"
                                     class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-                                    title="Edit"
+                                    :title="t('admin.list.action_edit')"
                                 >
                                     <PencilSquareIcon class="h-4 w-4" />
                                 </Link>
                                 <button
                                     type="button"
                                     class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
-                                    title="Delete"
+                                    :title="t('admin.list.action_delete')"
                                     @click="askDelete(product)"
                                 >
                                     <TrashIcon class="h-4 w-4" />

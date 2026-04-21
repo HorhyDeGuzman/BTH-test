@@ -2,8 +2,11 @@
 import { Link, router } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 import { ArrowRightOnRectangleIcon, CubeIcon } from '@heroicons/vue/24/outline';
+import { useI18n } from 'vue-i18n';
+import LocaleSwitcher from '@/common/components/locale-switcher.vue';
 import { useAuth } from '@/modules/auth';
 
+const { t } = useI18n();
 const { user, isAuthenticated, logout } = useAuth();
 
 onMounted(() => {
@@ -42,9 +45,13 @@ const initials = (name?: string) =>
                             B
                         </span>
                         <div class="flex items-baseline gap-1.5">
-                            <span class="font-semibold tracking-tight text-slate-900">BTH</span>
-                            <span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                                Admin
+                            <span class="font-semibold tracking-tight text-slate-900">
+                                {{ t('public.layout.brand') }}
+                            </span>
+                            <span
+                                class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500"
+                            >
+                                {{ t('admin.layout.admin_pill') }}
                             </span>
                         </div>
                     </Link>
@@ -55,19 +62,22 @@ const initials = (name?: string) =>
                             class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                         >
                             <CubeIcon class="h-4 w-4 text-slate-500" />
-                            Products
+                            {{ t('admin.layout.products') }}
                         </Link>
                     </nav>
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <LocaleSwitcher />
                     <Link
                         href="/"
                         class="hidden text-xs font-medium text-slate-500 transition hover:text-slate-900 sm:inline"
                     >
-                        View public catalog →
+                        {{ t('admin.layout.view_public') }}
                     </Link>
-                    <div class="hidden items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3 sm:flex">
+                    <div
+                        class="hidden items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3 sm:flex"
+                    >
                         <span
                             class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white"
                         >
@@ -79,13 +89,13 @@ const initials = (name?: string) =>
                     </div>
                     <button type="button" class="btn-secondary" @click="handleLogout">
                         <ArrowRightOnRectangleIcon class="h-4 w-4" />
-                        <span class="hidden sm:inline">Log out</span>
+                        <span class="hidden sm:inline">{{ t('admin.layout.log_out') }}</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="container py-10 animate-fade-in">
+        <main class="container animate-fade-in py-10">
             <slot />
         </main>
     </div>

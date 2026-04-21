@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/vue/20/solid';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/common/layouts/admin-layout.vue';
 import { extractApiError, extractValidationErrors } from '@/common/helpers';
 import { useCategories } from '@/modules/categories';
@@ -12,12 +13,17 @@ const props = defineProps<{
     id?: number;
 }>();
 
+const { t } = useI18n();
+
 const isEdit = computed(() => typeof props.id === 'number');
-const title = computed(() => (isEdit.value ? 'Edit product' : 'Create product'));
+const kicker = computed(() =>
+    isEdit.value ? t('admin.form.kicker_edit') : t('admin.form.kicker_new'),
+);
+const title = computed(() =>
+    isEdit.value ? t('admin.form.title_edit') : t('admin.form.title_new'),
+);
 const subtitle = computed(() =>
-    isEdit.value
-        ? 'Update the details for this product.'
-        : 'Add a new product to the catalog.',
+    isEdit.value ? t('admin.form.subtitle_edit') : t('admin.form.subtitle_new'),
 );
 
 const { items: categories, fetchAll: fetchCategories } = useCategories();
@@ -46,7 +52,7 @@ onMounted(async () => {
             form.price = Number(product.price);
             form.category_id = product.category_id;
         } catch (err) {
-            generalError.value = extractApiError(err, 'Failed to load product');
+            generalError.value = extractApiError(err, t('admin.form.load_failed'));
         } finally {
             loadingExisting.value = false;
         }
@@ -76,7 +82,7 @@ async function submit(): Promise<void> {
         if (Object.keys(validation).length > 0) {
             fieldErrors.value = validation;
         } else {
-            generalError.value = extractApiError(err, 'Save failed');
+            generalError.value = extractApiError(err, t('admin.form.save_failed'));
         }
     }
 }
@@ -91,12 +97,12 @@ async function submit(): Promise<void> {
             class="mb-6 inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900"
         >
             <ArrowLeftIcon class="h-4 w-4" />
-            Back to products
+            {{ t('admin.form.back_to_products') }}
         </Link>
 
         <div class="mb-8 max-w-2xl">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                {{ isEdit ? 'Edit' : 'New' }}
+                {{ kicker }}
             </p>
             <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900">
                 {{ title }}
@@ -112,7 +118,6 @@ async function submit(): Promise<void> {
             <span>{{ generalError }}</span>
         </div>
 
-        <!-- Skeleton while loading the existing product -->
         <div v-if="loadingExisting" class="max-w-2xl space-y-4">
             <div class="skeleton h-36 w-full"></div>
             <div class="skeleton h-24 w-full"></div>
@@ -120,19 +125,20 @@ async function submit(): Promise<void> {
         </div>
 
         <form v-else class="max-w-2xl space-y-6" @submit.prevent="submit">
-            <!-- Basic info -->
             <section class="card p-6">
                 <header class="mb-5">
-                    <h2 class="text-sm font-semibold text-slate-900">Basic information</h2>
+                    <h2 class="text-sm font-semibold text-slate-900">
+                        {{ t('admin.form.section_basic_title') }}
+                    </h2>
                     <p class="text-xs text-slate-500">
-                        Name and category are required and shown publicly.
+                        {{ t('admin.form.section_basic_subtitle') }}
                     </p>
                 </header>
 
                 <div class="space-y-5">
                     <div>
                         <label for="name" class="text-xs font-semibold text-slate-700">
-                            Name
+                            {{ t('admin.form.field_name') }}
                         </label>
                         <input
                             id="name"
@@ -141,7 +147,7 @@ async function submit(): Promise<void> {
                             required
                             maxlength="255"
                             autofocus
-                            placeholder="e.g. Wireless headphones"
+                            :placeholder="t('admin.form.field_name_placeholder')"
                             class="field mt-1.5"
                         />
                         <p v-if="fieldErrors.name?.[0]" class="mt-1.5 text-xs text-rose-600">
@@ -151,7 +157,7 @@ async function submit(): Promise<void> {
 
                     <div>
                         <label for="category_id" class="text-xs font-semibold text-slate-700">
-                            Category
+                            {{ t('admin.form.field_category') }}
                         </label>
                         <div class="relative mt-1.5">
                             <select
@@ -160,7 +166,9 @@ async function submit(): Promise<void> {
                                 required
                                 class="field appearance-none pr-10"
                             >
-                                <option :value="0" disabled>— Select a category —</option>
+                                <option :value="0" disabled>
+                                    {{ t('admin.form.field_category_placeholder') }}
+                                </option>
                                 <option
                                     v-for="category in categories"
                                     :key="category.id"
@@ -190,18 +198,17 @@ async function submit(): Promise<void> {
                     </div>
 
                     <div>
-                        <label
-                            for="description"
-                            class="text-xs font-semibold text-slate-700"
-                        >
-                            Description
-                            <span class="font-normal text-slate-400">(optional)</span>
+                        <label for="description" class="text-xs font-semibold text-slate-700">
+                            {{ t('admin.form.field_description') }}
+                            <span class="font-normal text-slate-400">
+                                {{ t('admin.form.field_description_optional') }}
+                            </span>
                         </label>
                         <textarea
                             id="description"
                             v-model="form.description"
                             rows="5"
-                            placeholder="A short, helpful description of the product…"
+                            :placeholder="t('admin.form.field_description_placeholder')"
                             class="field mt-1.5 resize-y"
                         ></textarea>
                         <p
@@ -214,18 +221,19 @@ async function submit(): Promise<void> {
                 </div>
             </section>
 
-            <!-- Pricing -->
             <section class="card p-6">
                 <header class="mb-5">
-                    <h2 class="text-sm font-semibold text-slate-900">Pricing</h2>
+                    <h2 class="text-sm font-semibold text-slate-900">
+                        {{ t('admin.form.section_pricing_title') }}
+                    </h2>
                     <p class="text-xs text-slate-500">
-                        Must be greater than zero. Stored as decimal(10, 2).
+                        {{ t('admin.form.section_pricing_subtitle') }}
                     </p>
                 </header>
 
                 <div>
                     <label for="price" class="text-xs font-semibold text-slate-700">
-                        Price
+                        {{ t('admin.form.field_price') }}
                     </label>
                     <div class="relative mt-1.5">
                         <span
@@ -250,9 +258,10 @@ async function submit(): Promise<void> {
                 </div>
             </section>
 
-            <!-- Actions -->
             <footer class="flex items-center justify-end gap-3">
-                <Link href="/admin/products" class="btn-ghost"> Cancel </Link>
+                <Link href="/admin/products" class="btn-ghost">
+                    {{ t('admin.form.cancel') }}
+                </Link>
                 <button type="submit" :disabled="saving" class="btn-primary">
                     <svg
                         v-if="saving"
@@ -275,7 +284,11 @@ async function submit(): Promise<void> {
                         />
                     </svg>
                     <span>{{
-                        saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create product'
+                        saving
+                            ? t('admin.form.saving')
+                            : isEdit
+                              ? t('admin.form.save_changes')
+                              : t('admin.form.create')
                     }}</span>
                 </button>
             </footer>
