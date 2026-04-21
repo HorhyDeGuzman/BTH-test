@@ -4,6 +4,8 @@ import { onMounted, ref, watch } from 'vue';
 import AdminLayout from '@/common/layouts/admin-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
 import { useProductsApi } from '@/modules/products';
+import type { Product } from '@/modules/products';
+import DeleteProductModal from '@/modules/products/components/delete-product-modal.vue';
 import { formatPrice } from '@/modules/products/helpers/format-price';
 
 const {
@@ -16,28 +18,36 @@ const {
 } = useProductsApi();
 
 const currentPage = ref(1);
-const deletingId = ref<number | null>(null);
+const productToDelete = ref<Product | null>(null);
+const deleting = ref(false);
 
 onMounted(() => fetchList({ page: currentPage.value }));
 
 watch(currentPage, (page) => fetchList({ page }));
 
-async function handleDelete(id: number, name: string): Promise<void> {
-    // Temporary confirmation via window.confirm; a proper modal replaces
-    // this in a later commit per the task's bonus list.
-    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+function askDelete(product: Product): void {
+    productToDelete.value = product;
+}
 
-    deletingId.value = id;
+function closeDeleteModal(): void {
+    if (deleting.value) return;
+    productToDelete.value = null;
+}
+
+async function confirmDelete(): Promise<void> {
+    if (!productToDelete.value) return;
+    deleting.value = true;
     try {
-        await remove(id);
-        // If we just removed the last item on a page > 1, step back a page.
+        await remove(productToDelete.value.id);
+        productToDelete.value = null;
+        // Step back a page if we removed the last item on page > 1.
         if (products.value.length === 0 && currentPage.value > 1) {
             currentPage.value -= 1;
         } else {
             await fetchList({ page: currentPage.value });
         }
     } finally {
-        deletingId.value = null;
+        deleting.value = false;
     }
 }
 </script>
@@ -111,11 +121,10 @@ async function handleDelete(id: number, name: string): Promise<void> {
                             </Link>
                             <button
                                 type="button"
-                                class="text-red-600 hover:text-red-500 disabled:opacity-50"
-                                :disabled="deletingId === product.id"
-                                @click="handleDelete(product.id, product.name)"
+                                class="text-red-600 hover:text-red-500"
+                                @click="askDelete(product)"
                             >
-                                {{ deletingId === product.id ? 'Deleting…' : 'Delete' }}
+                                Delete
                             </button>
                         </td>
                     </tr>
@@ -130,5 +139,13 @@ async function handleDelete(id: number, name: string): Promise<void> {
                 :disabled="loading"
             />
         </div>
+
+        <DeleteProductModal
+            :show="productToDelete !== null"
+            :product="productToDelete"
+            :processing="deleting"
+            @close="closeDeleteModal"
+            @confirm="confirmDelete"
+        />
     </AdminLayout>
 </template>
