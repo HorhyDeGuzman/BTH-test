@@ -1,3 +1,11 @@
+export type {
+    ApiResource,
+    Paginated,
+    PaginationLinks,
+    PaginationMeta,
+    ValidationErrorResponse,
+} from './api';
+
 export interface User {
     id: number;
     name: string;
