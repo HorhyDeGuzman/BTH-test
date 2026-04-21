@@ -24,10 +24,6 @@ const {
 
 const { items: categories, fetchAll: fetchCategories } = useCategories();
 
-/**
- * Reads page / category / search from window.location so that reloading
- * or coming back from the detail page restores the browsing context.
- */
 function readUrlState() {
     if (typeof window === 'undefined') {
         return { page: 1, categoryId: null as number | null, search: '' };
@@ -63,10 +59,6 @@ watch(searchInput, (value) => {
     debouncedSearch.value = value;
 });
 
-/**
- * Mirror current state into the URL via replaceState so pagination doesn't
- * pollute browser history and so a reload/back-navigation restores the view.
- */
 function syncUrl() {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
@@ -96,9 +88,6 @@ onMounted(() => {
     });
 });
 
-// Single watcher to avoid double-fetching when a filter change also resets
-// the page to 1: if the filter changed but we're not on page 1 yet, just
-// reset the page — the watcher will re-fire with the new (page=1) state.
 watch(
     [currentPage, selectedCategoryId, debouncedSearch],
     ([page, cat, search], [, oldCat, oldSearch]) => {
@@ -122,32 +111,38 @@ function clearFilters() {
     <Head :title="pageTitle" />
 
     <PublicLayout>
-        <section class="relative overflow-hidden border-b border-slate-200 bg-white">
+        <section
+            class="relative overflow-hidden border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
+        >
             <div
-                class="absolute inset-0 bg-grid-slate [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,#000_30%,transparent_75%)] opacity-60"
+                class="absolute inset-0 bg-grid-slate [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,#000_30%,transparent_75%)] opacity-60 dark:opacity-20"
             />
             <div
-                class="absolute -top-24 left-1/2 h-72 w-[56rem] -translate-x-1/2 rounded-full bg-brand-gradient opacity-10 blur-3xl"
+                class="absolute -top-24 left-1/2 h-72 w-[56rem] -translate-x-1/2 rounded-full bg-brand-gradient opacity-10 blur-3xl dark:opacity-20"
             />
             <div class="container relative py-16 sm:py-24">
                 <div class="mx-auto max-w-2xl text-center">
                     <span class="chip-brand">{{ t('public.home.kicker') }}</span>
                     <h1
-                        class="mt-4 font-display text-4xl font-bold tracking-tightest text-slate-900 sm:text-6xl"
+                        class="mt-4 font-display text-4xl font-bold tracking-tightest text-slate-900 dark:text-slate-100 sm:text-6xl"
                     >
                         {{ t('public.home.title_part_1') }}
                         <span class="bg-brand-gradient bg-clip-text text-transparent">
                             {{ t('public.home.title_highlight') }}
                         </span>
                     </h1>
-                    <p class="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                    <p
+                        class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg"
+                    >
                         {{ t('public.home.subtitle') }}
                     </p>
                 </div>
             </div>
         </section>
 
-        <section class="sticky top-16 z-30 border-b border-slate-200 bg-slate-50/80 backdrop-blur">
+        <section
+            class="sticky top-16 z-30 border-b border-slate-200 bg-slate-50/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80"
+        >
             <div class="container flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
                 <div class="relative flex-1">
                     <MagnifyingGlassIcon
@@ -179,7 +174,7 @@ function clearFilters() {
         <section class="container py-10">
             <div
                 v-if="productsError"
-                class="mb-6 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700"
+                class="mb-6 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
             >
                 {{ productsError }}
             </div>
@@ -193,17 +188,17 @@ function clearFilters() {
 
             <div
                 v-else-if="products.length === 0"
-                class="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-20 text-center"
+                class="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-20 text-center dark:border-slate-700 dark:bg-slate-900/60"
             >
                 <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400"
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
                 >
                     <MagnifyingGlassIcon class="h-6 w-6" />
                 </div>
-                <h3 class="mt-4 text-base font-semibold text-slate-900">
+                <h3 class="mt-4 text-base font-semibold text-slate-900 dark:text-slate-100">
                     {{ t('public.home.empty_title') }}
                 </h3>
-                <p class="mt-1 text-sm text-slate-500">
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     {{ t('public.home.empty_description') }}
                 </p>
                 <button
@@ -227,7 +222,7 @@ function clearFilters() {
             </div>
 
             <div v-if="meta && meta.total > 0" class="mt-10 flex flex-col items-center gap-3">
-                <p class="text-xs text-slate-500">
+                <p class="text-xs text-slate-500 dark:text-slate-400">
                     {{
                         t('public.home.showing', {
                             from: meta.from ?? 0,

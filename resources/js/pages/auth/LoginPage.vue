@@ -4,15 +4,13 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { ArrowLeftIcon, LockClosedIcon } from '@heroicons/vue/20/solid';
 import { useI18n } from 'vue-i18n';
 import LocaleSwitcher from '@/common/components/locale-switcher.vue';
+import ThemeToggle from '@/common/components/theme-toggle.vue';
 import { extractApiError, extractValidationErrors } from '@/common/helpers';
 import { useAuth } from '@/modules/auth';
 
 const { t } = useI18n();
 const { isAuthenticated, login, loading } = useAuth();
 
-// Captured synchronously before the template renders, so authenticated
-// visitors never see the login UI — we show a neutral loading screen
-// while the redirect completes.
 const wasAuthenticatedOnMount = isAuthenticated.value;
 
 const form = reactive({
@@ -54,10 +52,9 @@ async function submit(): Promise<void> {
 <template>
     <Head :title="pageTitle" />
 
-    <!-- Silent loading screen while we redirect an already-authenticated admin -->
     <div
         v-if="wasAuthenticatedOnMount"
-        class="flex min-h-screen items-center justify-center bg-slate-50 text-slate-400"
+        class="flex min-h-screen items-center justify-center bg-slate-50 text-slate-400 dark:bg-slate-950 dark:text-slate-600"
     >
         <svg class="h-6 w-6 animate-spin" viewBox="0 0 24 24" fill="none">
             <circle
@@ -76,8 +73,12 @@ async function submit(): Promise<void> {
         </svg>
     </div>
 
-    <div v-else class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
+    <div
+        v-else
+        class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100"
+    >
         <div class="grid min-h-screen lg:grid-cols-2">
+            <!-- Brand aside keeps its dark look on both themes -->
             <aside
                 class="relative hidden overflow-hidden bg-slate-950 text-white lg:flex lg:flex-col lg:justify-between lg:p-12"
             >
@@ -138,41 +139,47 @@ async function submit(): Promise<void> {
             </aside>
 
             <main class="flex flex-col px-6 py-12 sm:px-12 lg:px-16">
-                <div class="flex justify-end">
+                <div class="flex justify-end gap-2">
+                    <ThemeToggle />
                     <LocaleSwitcher />
                 </div>
                 <div class="flex flex-1 items-center justify-center">
                     <div class="w-full max-w-sm animate-fade-in">
                         <Link
                             href="/"
-                            class="mb-10 flex w-fit items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900"
+                            class="mb-10 flex w-fit items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                         >
                             <ArrowLeftIcon class="h-4 w-4" />
                             {{ t('auth.login.back_to_catalog') }}
                         </Link>
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                         >
                             <LockClosedIcon class="h-5 w-5" />
                         </div>
-                        <h2 class="mt-4 font-display text-2xl font-bold tracking-tight text-slate-900">
+                        <h2
+                            class="mt-4 font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
+                        >
                             {{ t('auth.login.welcome') }}
                         </h2>
-                        <p class="mt-1 text-sm text-slate-500">
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                             {{ t('auth.login.welcome_subtitle') }}
                         </p>
 
                         <div
                             v-if="generalError"
-                            class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
+                            class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
                         >
                             {{ generalError }}
                         </div>
 
                         <form class="mt-6 space-y-4" @submit.prevent="submit">
                             <div>
-                                <label for="email" class="text-xs font-semibold text-slate-700">
+                                <label
+                                    for="email"
+                                    class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                                >
                                     {{ t('auth.login.email') }}
                                 </label>
                                 <input
@@ -185,13 +192,19 @@ async function submit(): Promise<void> {
                                     :placeholder="t('auth.login.email_placeholder')"
                                     class="field mt-1.5"
                                 />
-                                <p v-if="fieldErrors.email?.[0]" class="mt-1.5 text-xs text-rose-600">
+                                <p
+                                    v-if="fieldErrors.email?.[0]"
+                                    class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
+                                >
                                     {{ fieldErrors.email[0] }}
                                 </p>
                             </div>
 
                             <div>
-                                <label for="password" class="text-xs font-semibold text-slate-700">
+                                <label
+                                    for="password"
+                                    class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                                >
                                     {{ t('auth.login.password') }}
                                 </label>
                                 <input
@@ -205,7 +218,7 @@ async function submit(): Promise<void> {
                                 />
                                 <p
                                     v-if="fieldErrors.password?.[0]"
-                                    class="mt-1.5 text-xs text-rose-600"
+                                    class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
                                 >
                                     {{ fieldErrors.password[0] }}
                                 </p>
@@ -213,7 +226,11 @@ async function submit(): Promise<void> {
 
                             <button type="submit" :disabled="loading" class="btn-primary w-full">
                                 <span v-if="loading" class="flex items-center gap-2">
-                                    <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <svg
+                                        class="h-4 w-4 animate-spin"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
                                         <circle
                                             class="opacity-25"
                                             cx="12"
@@ -235,13 +252,19 @@ async function submit(): Promise<void> {
                         </form>
 
                         <div
-                            class="mt-8 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-500"
+                            class="mt-8 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
                         >
-                            <span class="font-medium text-slate-700">
+                            <span class="font-medium text-slate-700 dark:text-slate-300">
                                 {{ t('auth.login.demo_credentials') }}
                             </span>
-                            · <code class="font-mono text-slate-900">admin@admin.test</code>
-                            / <code class="font-mono text-slate-900">password</code>
+                            ·
+                            <code class="font-mono text-slate-900 dark:text-slate-100">
+                                admin@admin.test
+                            </code>
+                            /
+                            <code class="font-mono text-slate-900 dark:text-slate-100">
+                                password
+                            </code>
                         </div>
                     </div>
                 </div>

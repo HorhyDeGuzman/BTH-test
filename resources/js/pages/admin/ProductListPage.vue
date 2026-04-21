@@ -99,13 +99,15 @@ async function confirmDelete(): Promise<void> {
     <AdminLayout>
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {{ t('admin.list.kicker') }}
                 </p>
-                <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900">
+                <h1
+                    class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
+                >
                     {{ t('admin.list.title') }}
                 </h1>
-                <p v-if="meta" class="mt-1 text-sm text-slate-500">
+                <p v-if="meta" class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     {{ t('admin.list.total', { count: meta.total }) }}
                 </p>
             </div>
@@ -117,35 +119,37 @@ async function confirmDelete(): Promise<void> {
 
         <div
             v-if="error"
-            class="mb-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700"
+            class="mb-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
         >
             <ExclamationCircleIcon class="mt-0.5 h-5 w-5 flex-shrink-0" />
             <span>{{ error }}</span>
         </div>
 
         <div class="card overflow-hidden">
-            <table class="min-w-full divide-y divide-slate-100">
-                <thead class="bg-slate-50/70">
+            <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
+                <thead class="bg-slate-50/70 dark:bg-slate-900/60">
                     <tr>
                         <th
-                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                         >
                             {{ t('admin.list.col_product') }}
                         </th>
                         <th
-                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                         >
                             {{ t('admin.list.col_category') }}
                         </th>
                         <th
-                            class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                            class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                         >
                             {{ t('admin.list.col_price') }}
                         </th>
                         <th class="px-5 py-3"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody
+                    class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-900"
+                >
                     <template v-if="loading && products.length === 0">
                         <tr v-for="i in 6" :key="`s-${i}`">
                             <td class="px-5 py-4">
@@ -167,14 +171,16 @@ async function confirmDelete(): Promise<void> {
                         <td colspan="4" class="px-5 py-16">
                             <div class="mx-auto flex max-w-sm flex-col items-center text-center">
                                 <div
-                                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400"
+                                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
                                 >
                                     <CubeIcon class="h-6 w-6" />
                                 </div>
-                                <h3 class="mt-4 text-base font-semibold text-slate-900">
+                                <h3
+                                    class="mt-4 text-base font-semibold text-slate-900 dark:text-slate-100"
+                                >
                                     {{ t('admin.list.empty_title') }}
                                 </h3>
-                                <p class="mt-1 text-sm text-slate-500">
+                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                                     {{ t('admin.list.empty_description') }}
                                 </p>
                                 <Link href="/admin/products/create" class="btn-primary mt-6">
@@ -188,7 +194,7 @@ async function confirmDelete(): Promise<void> {
                     <tr
                         v-for="product in products"
                         :key="product.id"
-                        class="group transition hover:bg-slate-50/60"
+                        class="group transition hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                     >
                         <td class="px-5 py-3.5">
                             <div class="flex items-center gap-3">
@@ -208,11 +214,11 @@ async function confirmDelete(): Promise<void> {
                                 <div class="min-w-0">
                                     <Link
                                         :href="`/product/${product.id}`"
-                                        class="block truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-700"
+                                        class="block truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300"
                                     >
                                         {{ productName(product) }}
                                     </Link>
-                                    <p class="truncate text-xs text-slate-500">
+                                    <p class="truncate text-xs text-slate-500 dark:text-slate-500">
                                         #{{ product.id }}
                                     </p>
                                 </div>
@@ -224,7 +230,7 @@ async function confirmDelete(): Promise<void> {
                             </span>
                         </td>
                         <td
-                            class="px-5 py-3.5 text-right font-mono text-sm font-semibold text-slate-900"
+                            class="px-5 py-3.5 text-right font-mono text-sm font-semibold text-slate-900 dark:text-slate-100"
                         >
                             {{ formatPrice(product.price) }}
                         </td>
@@ -232,14 +238,14 @@ async function confirmDelete(): Promise<void> {
                             <div class="flex justify-end gap-1">
                                 <Link
                                     :href="`/admin/products/${product.id}/edit`"
-                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                                     :title="t('admin.list.action_edit')"
                                 >
                                     <PencilSquareIcon class="h-4 w-4" />
                                 </Link>
                                 <button
                                     type="button"
-                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
                                     :title="t('admin.list.action_delete')"
                                     @click="askDelete(product)"
                                 >

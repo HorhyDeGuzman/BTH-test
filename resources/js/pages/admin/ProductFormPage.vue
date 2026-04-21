@@ -123,25 +123,27 @@ async function submit(): Promise<void> {
     <AdminLayout>
         <Link
             href="/admin/products"
-            class="mb-6 inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900"
+            class="mb-6 inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
         >
             <ArrowLeftIcon class="h-4 w-4" />
             {{ t('admin.form.back_to_products') }}
         </Link>
 
         <div class="mb-8 max-w-2xl">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {{ kicker }}
             </p>
-            <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900">
+            <h1
+                class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
+            >
                 {{ title }}
             </h1>
-            <p class="mt-1 text-sm text-slate-500">{{ subtitle }}</p>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ subtitle }}</p>
         </div>
 
         <div
             v-if="generalError"
-            class="mb-6 flex max-w-2xl items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700"
+            class="mb-6 flex max-w-2xl items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
         >
             <ExclamationCircleIcon class="mt-0.5 h-5 w-5 flex-shrink-0" />
             <span>{{ generalError }}</span>
@@ -156,19 +158,21 @@ async function submit(): Promise<void> {
         <form v-else class="max-w-2xl space-y-6" @submit.prevent="submit">
             <section class="card p-6">
                 <header class="mb-5">
-                    <h2 class="text-sm font-semibold text-slate-900">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {{ t('admin.form.section_basic_title') }}
                     </h2>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
                         {{ t('admin.form.section_basic_subtitle') }}
                     </p>
                 </header>
 
                 <div class="space-y-5">
-                    <!-- Name — bilingual -->
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>
-                            <label for="name" class="text-xs font-semibold text-slate-700">
+                            <label
+                                for="name"
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                            >
                                 {{ t('admin.form.field_name_ru') }}
                             </label>
                             <input
@@ -181,14 +185,20 @@ async function submit(): Promise<void> {
                                 :placeholder="t('admin.form.field_name_placeholder_ru')"
                                 class="field mt-1.5"
                             />
-                            <p v-if="fieldErrors.name?.[0]" class="mt-1.5 text-xs text-rose-600">
+                            <p
+                                v-if="fieldErrors.name?.[0]"
+                                class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
+                            >
                                 {{ fieldErrors.name[0] }}
                             </p>
                         </div>
                         <div>
-                            <label for="name_en" class="text-xs font-semibold text-slate-700">
+                            <label
+                                for="name_en"
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                            >
                                 {{ t('admin.form.field_name_en') }}
-                                <span class="font-normal text-slate-400">
+                                <span class="font-normal text-slate-400 dark:text-slate-500">
                                     {{ t('admin.form.field_description_optional') }}
                                 </span>
                             </label>
@@ -200,15 +210,20 @@ async function submit(): Promise<void> {
                                 :placeholder="t('admin.form.field_name_placeholder_en')"
                                 class="field mt-1.5"
                             />
-                            <p v-if="fieldErrors.name_en?.[0]" class="mt-1.5 text-xs text-rose-600">
+                            <p
+                                v-if="fieldErrors.name_en?.[0]"
+                                class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
+                            >
                                 {{ fieldErrors.name_en[0] }}
                             </p>
                         </div>
                     </div>
 
-                    <!-- Category -->
                     <div>
-                        <label for="category_id" class="text-xs font-semibold text-slate-700">
+                        <label
+                            for="category_id"
+                            class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                        >
                             {{ t('admin.form.field_category') }}
                         </label>
                         <div class="relative mt-1.5">
@@ -234,7 +249,7 @@ async function submit(): Promise<void> {
                                 </option>
                             </select>
                             <svg
-                                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
                             >
@@ -247,21 +262,20 @@ async function submit(): Promise<void> {
                         </div>
                         <p
                             v-if="fieldErrors.category_id?.[0]"
-                            class="mt-1.5 text-xs text-rose-600"
+                            class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
                         >
                             {{ fieldErrors.category_id[0] }}
                         </p>
                     </div>
 
-                    <!-- Description — bilingual -->
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>
                             <label
                                 for="description"
-                                class="text-xs font-semibold text-slate-700"
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                             >
                                 {{ t('admin.form.field_description_ru') }}
-                                <span class="font-normal text-slate-400">
+                                <span class="font-normal text-slate-400 dark:text-slate-500">
                                     {{ t('admin.form.field_description_optional') }}
                                 </span>
                             </label>
@@ -274,7 +288,7 @@ async function submit(): Promise<void> {
                             ></textarea>
                             <p
                                 v-if="fieldErrors.description?.[0]"
-                                class="mt-1.5 text-xs text-rose-600"
+                                class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
                             >
                                 {{ fieldErrors.description[0] }}
                             </p>
@@ -282,10 +296,10 @@ async function submit(): Promise<void> {
                         <div>
                             <label
                                 for="description_en"
-                                class="text-xs font-semibold text-slate-700"
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                             >
                                 {{ t('admin.form.field_description_en') }}
-                                <span class="font-normal text-slate-400">
+                                <span class="font-normal text-slate-400 dark:text-slate-500">
                                     {{ t('admin.form.field_description_optional') }}
                                 </span>
                             </label>
@@ -298,7 +312,7 @@ async function submit(): Promise<void> {
                             ></textarea>
                             <p
                                 v-if="fieldErrors.description_en?.[0]"
-                                class="mt-1.5 text-xs text-rose-600"
+                                class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
                             >
                                 {{ fieldErrors.description_en[0] }}
                             </p>
@@ -307,22 +321,24 @@ async function submit(): Promise<void> {
                 </div>
             </section>
 
-            <!-- Media -->
             <section class="card p-6">
                 <header class="mb-5">
-                    <h2 class="text-sm font-semibold text-slate-900">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {{ t('admin.form.section_media_title') }}
                     </h2>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
                         {{ t('admin.form.section_media_subtitle') }}
                     </p>
                 </header>
 
                 <div class="flex flex-col gap-4 sm:flex-row">
                     <div class="flex-1">
-                        <label for="image_url" class="text-xs font-semibold text-slate-700">
+                        <label
+                            for="image_url"
+                            class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                        >
                             {{ t('admin.form.field_image_url') }}
-                            <span class="font-normal text-slate-400">
+                            <span class="font-normal text-slate-400 dark:text-slate-500">
                                 {{ t('admin.form.field_image_url_optional') }}
                             </span>
                         </label>
@@ -337,12 +353,14 @@ async function submit(): Promise<void> {
                         />
                         <p
                             v-if="fieldErrors.image_url?.[0]"
-                            class="mt-1.5 text-xs text-rose-600"
+                            class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
                         >
                             {{ fieldErrors.image_url[0] }}
                         </p>
                     </div>
-                    <div class="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                    <div
+                        class="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800"
+                    >
                         <img
                             v-if="imagePreviewUrl && !previewFailed"
                             :src="imagePreviewUrl"
@@ -350,28 +368,33 @@ async function submit(): Promise<void> {
                             class="h-full w-full object-cover"
                             @error="previewFailed = true"
                         />
-                        <span v-else class="text-[10px] text-slate-400">preview</span>
+                        <span v-else class="text-[10px] text-slate-400 dark:text-slate-500">
+                            preview
+                        </span>
                     </div>
                 </div>
             </section>
 
             <section class="card p-6">
                 <header class="mb-5">
-                    <h2 class="text-sm font-semibold text-slate-900">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {{ t('admin.form.section_pricing_title') }}
                     </h2>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
                         {{ t('admin.form.section_pricing_subtitle') }}
                     </p>
                 </header>
 
                 <div>
-                    <label for="price" class="text-xs font-semibold text-slate-700">
+                    <label
+                        for="price"
+                        class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                    >
                         {{ t('admin.form.field_price') }}
                     </label>
                     <div class="relative mt-1.5">
                         <span
-                            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400"
+                            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400 dark:text-slate-500"
                         >
                             $
                         </span>
@@ -386,7 +409,10 @@ async function submit(): Promise<void> {
                             class="field pl-7 font-mono"
                         />
                     </div>
-                    <p v-if="fieldErrors.price?.[0]" class="mt-1.5 text-xs text-rose-600">
+                    <p
+                        v-if="fieldErrors.price?.[0]"
+                        class="mt-1.5 text-xs text-rose-600 dark:text-rose-400"
+                    >
                         {{ fieldErrors.price[0] }}
                     </p>
                 </div>

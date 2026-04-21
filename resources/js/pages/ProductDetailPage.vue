@@ -80,20 +80,20 @@ onMounted(() => {
 
     <PublicLayout>
         <div class="container py-10">
-            <nav class="mb-8 flex items-center gap-2 text-sm text-slate-500">
-                <Link href="/" class="transition hover:text-slate-900">
+            <nav class="mb-8 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <Link
+                    href="/"
+                    class="transition hover:text-slate-900 dark:hover:text-slate-100"
+                >
                     {{ t('public.detail.breadcrumb_catalog') }}
                 </Link>
-                <span class="text-slate-300">/</span>
-                <span class="truncate text-slate-900">
+                <span class="text-slate-300 dark:text-slate-600">/</span>
+                <span class="truncate text-slate-900 dark:text-slate-100">
                     {{ name || t('public.detail.product_fallback') }}
                 </span>
             </nav>
 
-            <div
-                v-if="loading && !product"
-                class="grid gap-10 animate-fade-in lg:grid-cols-5"
-            >
+            <div v-if="loading && !product" class="grid gap-10 animate-fade-in lg:grid-cols-5">
                 <div class="skeleton aspect-square rounded-2xl lg:col-span-2"></div>
                 <div class="flex flex-col gap-4 lg:col-span-3">
                     <div class="skeleton h-4 w-24"></div>
@@ -105,17 +105,17 @@ onMounted(() => {
 
             <div
                 v-else-if="error"
-                class="mx-auto max-w-xl rounded-2xl border border-rose-200 bg-rose-50/70 p-8 text-center"
+                class="mx-auto max-w-xl rounded-2xl border border-rose-200 bg-rose-50/70 p-8 text-center dark:border-rose-500/30 dark:bg-rose-500/10"
             >
                 <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-100 text-rose-600"
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300"
                 >
                     <ExclamationCircleIcon class="h-6 w-6" />
                 </div>
-                <h2 class="mt-4 text-lg font-semibold text-rose-900">
+                <h2 class="mt-4 text-lg font-semibold text-rose-900 dark:text-rose-200">
                     {{ error }}
                 </h2>
-                <p class="mt-1 text-sm text-rose-700">
+                <p class="mt-1 text-sm text-rose-700 dark:text-rose-300/80">
                     {{ t('public.detail.error_hint') }}
                 </p>
                 <button type="button" class="btn-secondary mt-6" @click="goBack">
@@ -132,7 +132,9 @@ onMounted(() => {
                     <div
                         :class="[
                             'relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl shadow-lift',
-                            showImage ? 'bg-slate-100' : `bg-gradient-to-br ${gradient}`,
+                            showImage
+                                ? 'bg-slate-100 dark:bg-slate-800'
+                                : `bg-gradient-to-br ${gradient}`,
                         ]"
                     >
                         <img
@@ -161,7 +163,7 @@ onMounted(() => {
                             {{ categoryName }}
                         </span>
                         <h1
-                            class="mt-4 font-display text-3xl font-bold tracking-tightest text-slate-900 sm:text-4xl"
+                            class="mt-4 font-display text-3xl font-bold tracking-tightest text-slate-900 dark:text-slate-100 sm:text-4xl"
                         >
                             {{ name }}
                         </h1>
@@ -169,42 +171,52 @@ onMounted(() => {
 
                     <div class="flex items-baseline gap-3">
                         <span
-                            class="font-display text-4xl font-bold tracking-tight text-slate-900"
+                            class="font-display text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
                         >
                             {{ formatPrice(product.price) }}
                         </span>
-                        <span class="text-sm text-slate-400">
+                        <span class="text-sm text-slate-400 dark:text-slate-500">
                             {{ t('public.detail.incl_taxes') }}
                         </span>
                     </div>
 
                     <div class="card p-6">
-                        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <h2
+                            class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                        >
                             {{ t('public.detail.description') }}
                         </h2>
                         <p
                             v-if="description"
-                            class="mt-3 whitespace-pre-line text-base leading-relaxed text-slate-700"
+                            class="mt-3 whitespace-pre-line text-base leading-relaxed text-slate-700 dark:text-slate-300"
                         >
                             {{ description }}
                         </p>
-                        <p v-else class="mt-3 italic text-slate-400">
+                        <p v-else class="mt-3 italic text-slate-400 dark:text-slate-500">
                             {{ t('public.detail.no_description') }}
                         </p>
                     </div>
 
                     <dl class="grid grid-cols-2 gap-4 text-sm">
                         <div class="card p-4">
-                            <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">
+                            <dt
+                                class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                            >
                                 {{ t('public.detail.product_id') }}
                             </dt>
-                            <dd class="mt-1 font-mono text-slate-900">#{{ product.id }}</dd>
+                            <dd class="mt-1 font-mono text-slate-900 dark:text-slate-100">
+                                #{{ product.id }}
+                            </dd>
                         </div>
                         <div v-if="createdDate" class="card p-4">
-                            <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">
+                            <dt
+                                class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                            >
                                 {{ t('public.detail.added') }}
                             </dt>
-                            <dd class="mt-1 text-slate-900">{{ createdDate }}</dd>
+                            <dd class="mt-1 text-slate-900 dark:text-slate-100">
+                                {{ createdDate }}
+                            </dd>
                         </div>
                     </dl>
 

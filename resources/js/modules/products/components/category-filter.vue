@@ -40,7 +40,7 @@ function displayName(category: Category): string {
             </option>
         </select>
         <svg
-            class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
             viewBox="0 0 20 20"
             fill="currentColor"
         >

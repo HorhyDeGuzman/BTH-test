@@ -40,10 +40,10 @@ function go(page: number) {
         >
             <ChevronLeftIcon class="h-4 w-4" />
         </button>
-        <div class="px-2 font-medium text-slate-600">
+        <div class="px-2 font-medium text-slate-600 dark:text-slate-400">
             {{ t('pagination.page') }}
-            <span class="text-slate-900">{{ currentPage }}</span>
-            <span class="text-slate-400"> / {{ lastPage }}</span>
+            <span class="text-slate-900 dark:text-slate-100">{{ currentPage }}</span>
+            <span class="text-slate-400 dark:text-slate-500"> / {{ lastPage }}</span>
         </div>
         <button
             type="button"

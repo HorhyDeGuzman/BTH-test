@@ -26,8 +26,6 @@ const categoryName = computed(() =>
         : null,
 );
 
-// Deterministic gradient used as a stylized placeholder whenever the image
-// URL is missing or fails to load.
 const gradient = computed(() => {
     const palettes = [
         'from-indigo-500/90 via-violet-500/80 to-fuchsia-500/70',
@@ -49,12 +47,14 @@ const showImage = computed(() => !!props.product.image_url && !imageFailed.value
 <template>
     <Link
         :href="`/product/${product.id}`"
-        class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition-colors duration-150 hover:border-slate-300 hover:shadow-lift"
+        class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition-colors duration-150 hover:border-slate-300 hover:shadow-lift dark:border-slate-800 dark:bg-slate-900 dark:shadow-none dark:hover:border-slate-700"
     >
         <div
             :class="[
                 'relative aspect-[4/3] overflow-hidden',
-                showImage ? 'bg-slate-100' : `bg-gradient-to-br ${gradient}`,
+                showImage
+                    ? 'bg-slate-100 dark:bg-slate-800'
+                    : `bg-gradient-to-br ${gradient}`,
             ]"
         >
             <img
@@ -77,7 +77,7 @@ const showImage = computed(() => !!props.product.image_url && !imageFailed.value
             </template>
             <span
                 v-if="categoryName"
-                class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-700 backdrop-blur"
+                class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-700 backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
             >
                 {{ categoryName }}
             </span>
@@ -85,19 +85,24 @@ const showImage = computed(() => !!props.product.image_url && !imageFailed.value
 
         <div class="flex flex-1 flex-col gap-2 p-4">
             <h3
-                class="line-clamp-2 text-base font-semibold text-slate-900 transition group-hover:text-brand-700"
+                class="line-clamp-2 text-base font-semibold text-slate-900 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300"
             >
                 {{ name }}
             </h3>
-            <p v-if="description" class="line-clamp-2 text-sm text-slate-500">
+            <p
+                v-if="description"
+                class="line-clamp-2 text-sm text-slate-500 dark:text-slate-400"
+            >
                 {{ description }}
             </p>
             <div class="mt-auto flex items-end justify-between pt-2">
-                <span class="font-display text-xl font-bold tracking-tight text-slate-900">
+                <span
+                    class="font-display text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
+                >
                     {{ formatPrice(product.price) }}
                 </span>
                 <span
-                    class="text-xs font-medium text-slate-400 transition group-hover:text-brand-500"
+                    class="text-xs font-medium text-slate-400 transition group-hover:text-brand-500 dark:text-slate-500 dark:group-hover:text-brand-400"
                 >
                     {{ t('public.card.view') }}
                 </span>

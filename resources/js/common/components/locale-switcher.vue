@@ -13,8 +13,8 @@ function handleChange(next: SupportedLocale): void {
 <template>
     <div
         role="radiogroup"
-        :aria-label="'Language'"
-        class="inline-flex items-center rounded-full border border-slate-200 bg-slate-100/70 p-0.5 text-xs font-semibold"
+        aria-label="Language"
+        class="inline-flex items-center rounded-full border border-slate-200 bg-slate-100/70 p-0.5 text-xs font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800/70"
     >
         <button
             v-for="code in SUPPORTED_LOCALES"
@@ -25,8 +25,8 @@ function handleChange(next: SupportedLocale): void {
             :class="[
                 'rounded-full px-2.5 py-1 transition-colors',
                 locale === code
-                    ? 'bg-white text-slate-900 shadow-soft'
-                    : 'text-slate-500 hover:text-slate-900',
+                    ? 'bg-white text-slate-900 shadow-soft dark:bg-slate-950 dark:text-slate-100'
+                    : 'hover:text-slate-900 dark:hover:text-slate-100',
             ]"
             @click="handleChange(code)"
         >

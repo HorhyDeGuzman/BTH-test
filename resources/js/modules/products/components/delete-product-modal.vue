@@ -32,18 +32,18 @@ const confirmMessage = computed(() =>
 
 <template>
     <Modal :show="show" max-width="md" @close="emit('close')">
-        <div class="p-6">
+        <div class="bg-white p-6 dark:bg-slate-900">
             <div class="flex items-start gap-4">
                 <div
-                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300"
                 >
                     <ExclamationTriangleIcon class="h-5 w-5" />
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h2 class="text-base font-semibold text-slate-900">
+                    <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">
                         {{ t('admin.delete_modal.title') }}
                     </h2>
-                    <p class="mt-1 text-sm text-slate-600">
+                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                         {{ confirmMessage }}
                     </p>
                 </div>
