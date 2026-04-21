@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Route;
 | Public endpoints
 |--------------------------------------------------------------------------
 */
-Route::post('/login', [AuthController::class, 'login'])->name('api.login');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:6,1')
+    ->name('api.login');
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('api.categories.index');
 

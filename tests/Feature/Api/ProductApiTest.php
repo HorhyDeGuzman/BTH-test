@@ -149,4 +149,22 @@ class ProductApiTest extends TestCase
 
         $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
+
+    public function test_update_requires_authentication(): void
+    {
+        $product = Product::factory()->for(Category::factory())->create();
+
+        $this->putJson("/api/products/{$product->id}", [
+            'name' => 'x',
+            'price' => 1,
+            'category_id' => $product->category_id,
+        ])->assertUnauthorized();
+    }
+
+    public function test_destroy_requires_authentication(): void
+    {
+        $product = Product::factory()->for(Category::factory())->create();
+
+        $this->deleteJson("/api/products/{$product->id}")->assertUnauthorized();
+    }
 }
