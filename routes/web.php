@@ -11,6 +11,12 @@ use Inertia\Inertia;
 */
 Route::get('/', fn () => Inertia::render('HomePage'))->name('home');
 
+Route::get('/product/{id}', fn (int $id) => Inertia::render('ProductDetailPage', [
+    'id' => $id,
+]))
+    ->whereNumber('id')
+    ->name('products.show');
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated (session) routes kept from Breeze scaffold for now.
