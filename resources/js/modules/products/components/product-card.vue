@@ -62,7 +62,7 @@ const showImage = computed(() => !!props.product.image_url && !imageFailed.value
                 :src="product.image_url ?? ''"
                 :alt="name"
                 loading="lazy"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                class="h-full w-full object-cover"
                 @error="imageFailed = true"
             />
             <template v-else>

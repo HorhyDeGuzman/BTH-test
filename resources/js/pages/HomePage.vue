@@ -24,10 +24,30 @@ const {
 
 const { items: categories, fetchAll: fetchCategories } = useCategories();
 
-const selectedCategoryId = ref<number | null>(null);
-const currentPage = ref(1);
-const searchInput = ref('');
-const debouncedSearch = useDebouncedRef('', 400);
+/**
+ * Reads page / category / search from window.location so that reloading
+ * or coming back from the detail page restores the browsing context.
+ */
+function readUrlState() {
+    if (typeof window === 'undefined') {
+        return { page: 1, categoryId: null as number | null, search: '' };
+    }
+    const params = new URLSearchParams(window.location.search);
+    const pageNum = Number(params.get('page'));
+    const catNum = Number(params.get('category_id'));
+    return {
+        page: Number.isFinite(pageNum) && pageNum > 0 ? pageNum : 1,
+        categoryId: Number.isFinite(catNum) && catNum > 0 ? catNum : null,
+        search: params.get('search') ?? '',
+    };
+}
+
+const initialState = readUrlState();
+
+const currentPage = ref(initialState.page);
+const selectedCategoryId = ref<number | null>(initialState.categoryId);
+const searchInput = ref(initialState.search);
+const debouncedSearch = useDebouncedRef(initialState.search, 400);
 
 const hasActiveFilters = computed(
     () => selectedCategoryId.value !== null || debouncedSearch.value !== '',
@@ -43,18 +63,54 @@ watch(searchInput, (value) => {
     debouncedSearch.value = value;
 });
 
+/**
+ * Mirror current state into the URL via replaceState so pagination doesn't
+ * pollute browser history and so a reload/back-navigation restores the view.
+ */
+function syncUrl() {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const page = currentPage.value;
+    const cat = selectedCategoryId.value;
+    const search = debouncedSearch.value;
+
+    if (page > 1) url.searchParams.set('page', String(page));
+    else url.searchParams.delete('page');
+
+    if (cat) url.searchParams.set('category_id', String(cat));
+    else url.searchParams.delete('category_id');
+
+    if (search) url.searchParams.set('search', search);
+    else url.searchParams.delete('search');
+
+    window.history.replaceState(window.history.state, '', url.toString());
+}
+
 onMounted(() => {
     fetchCategories();
-    fetchList({ page: currentPage.value });
+    syncUrl();
+    fetchList({
+        page: currentPage.value,
+        category_id: selectedCategoryId.value,
+        search: debouncedSearch.value,
+    });
 });
 
-watch([selectedCategoryId, currentPage, debouncedSearch], ([categoryId, page, search]) => {
-    fetchList({ category_id: categoryId, page, search });
-});
-
-watch([selectedCategoryId, debouncedSearch], () => {
-    if (currentPage.value !== 1) currentPage.value = 1;
-});
+// Single watcher to avoid double-fetching when a filter change also resets
+// the page to 1: if the filter changed but we're not on page 1 yet, just
+// reset the page — the watcher will re-fire with the new (page=1) state.
+watch(
+    [currentPage, selectedCategoryId, debouncedSearch],
+    ([page, cat, search], [, oldCat, oldSearch]) => {
+        const filterChanged = cat !== oldCat || search !== oldSearch;
+        if (filterChanged && page !== 1) {
+            currentPage.value = 1;
+            return;
+        }
+        syncUrl();
+        fetchList({ page, category_id: cat, search });
+    },
+);
 
 function clearFilters() {
     selectedCategoryId.value = null;
@@ -66,7 +122,6 @@ function clearFilters() {
     <Head :title="pageTitle" />
 
     <PublicLayout>
-        <!-- Hero -->
         <section class="relative overflow-hidden border-b border-slate-200 bg-white">
             <div
                 class="absolute inset-0 bg-grid-slate [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,#000_30%,transparent_75%)] opacity-60"
@@ -92,7 +147,6 @@ function clearFilters() {
             </div>
         </section>
 
-        <!-- Search + filter bar -->
         <section class="sticky top-16 z-30 border-b border-slate-200 bg-slate-50/80 backdrop-blur">
             <div class="container flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
                 <div class="relative flex-1">
@@ -122,7 +176,6 @@ function clearFilters() {
             </div>
         </section>
 
-        <!-- Content -->
         <section class="container py-10">
             <div
                 v-if="productsError"

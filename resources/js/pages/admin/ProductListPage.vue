@@ -28,7 +28,13 @@ const {
     remove,
 } = useProductsApi();
 
-const currentPage = ref(1);
+function readInitialPage(): number {
+    if (typeof window === 'undefined') return 1;
+    const raw = Number(new URLSearchParams(window.location.search).get('page'));
+    return Number.isFinite(raw) && raw > 0 ? raw : 1;
+}
+
+const currentPage = ref(readInitialPage());
 const productToDelete = ref<Product | null>(null);
 const deleting = ref(false);
 
@@ -43,9 +49,23 @@ function categoryName(product: Product): string {
     return pickLocalized(product.category.name, product.category.name_en, locale.value);
 }
 
-onMounted(() => fetchList({ page: currentPage.value }));
+function syncUrl() {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (currentPage.value > 1) url.searchParams.set('page', String(currentPage.value));
+    else url.searchParams.delete('page');
+    window.history.replaceState(window.history.state, '', url.toString());
+}
 
-watch(currentPage, (page) => fetchList({ page }));
+onMounted(() => {
+    syncUrl();
+    fetchList({ page: currentPage.value });
+});
+
+watch(currentPage, (page) => {
+    syncUrl();
+    fetchList({ page });
+});
 
 function askDelete(product: Product): void {
     productToDelete.value = product;
