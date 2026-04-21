@@ -19,6 +19,18 @@ Route::get('/product/{id}', fn (int $id) => Inertia::render('ProductDetailPage',
 
 /*
 |--------------------------------------------------------------------------
+| Admin pages (Inertia shell only — auth is enforced client-side via the
+| Sanctum token in localStorage; the REST API itself rejects anonymous
+| writes with 401).
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/products', fn () => Inertia::render('admin/ProductListPage'))
+        ->name('products.index');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Authenticated (session) routes kept from Breeze scaffold for now.
 | The product-admin flow runs on the REST API (Sanctum tokens), not on
 | session auth — those routes are added in a later commit.
