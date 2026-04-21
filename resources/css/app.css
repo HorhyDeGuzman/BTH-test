@@ -1,3 +1,88 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        @apply antialiased;
+        font-feature-settings:
+            'cv11' on,
+            'ss01' on,
+            'ss03' on,
+            'cv02' on;
+    }
+
+    body {
+        @apply bg-slate-50 text-slate-900;
+    }
+
+    /* Nicer focus rings everywhere */
+    :focus-visible {
+        @apply outline-none ring-2 ring-brand-500/50 ring-offset-2 ring-offset-white;
+    }
+
+    /* Thin, modern scrollbar */
+    ::-webkit-scrollbar {
+        @apply h-2 w-2;
+    }
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-slate-300 transition hover:bg-slate-400;
+    }
+
+    /* Selection */
+    ::selection {
+        @apply bg-brand-200 text-brand-900;
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn-primary {
+        @apply btn bg-slate-900 text-white shadow-soft hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lift active:translate-y-0 focus-visible:ring-slate-900/30;
+    }
+    .btn-secondary {
+        @apply btn border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-slate-900/20;
+    }
+    .btn-ghost {
+        @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-900/20;
+    }
+    .btn-danger {
+        @apply btn bg-rose-600 text-white shadow-soft hover:-translate-y-0.5 hover:bg-rose-500 hover:shadow-lift active:translate-y-0 focus-visible:ring-rose-500/40;
+    }
+
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-soft;
+    }
+
+    .field {
+        @apply block w-full rounded-lg border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 shadow-soft transition focus:border-slate-900 focus:ring-slate-900;
+    }
+
+    .chip {
+        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-600;
+    }
+
+    .chip-brand {
+        @apply inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-brand-700;
+    }
+
+    .skeleton {
+        @apply relative overflow-hidden rounded-md bg-slate-100;
+    }
+    .skeleton::after {
+        content: '';
+        @apply absolute inset-0 animate-shimmer;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.6) 50%,
+            transparent 100%
+        );
+        background-size: 800px 100%;
+    }
+}
