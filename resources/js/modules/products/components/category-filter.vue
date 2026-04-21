@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Category } from '@/modules/categories';
 
 const props = defineProps<{
@@ -12,6 +13,8 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
 }>();
 
+const { t } = useI18n();
+
 const selected = computed({
     get: () => props.modelValue,
     set: (value: number | null) => emit('update:modelValue', value),
@@ -23,9 +26,10 @@ const selected = computed({
         <select
             v-model.number="selected"
             :disabled="disabled"
+            :aria-label="t('public.filter.category_label')"
             class="field w-full appearance-none pl-4 pr-10 sm:w-52"
         >
-            <option :value="null">All categories</option>
+            <option :value="null">{{ t('public.filter.all_categories') }}</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
             </option>

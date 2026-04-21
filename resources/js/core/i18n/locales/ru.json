@@ -1,0 +1,138 @@
+{
+    "common": {
+        "admin": "Админ",
+        "loading": "Загрузка…"
+    },
+    "locale": {
+        "ru": "RU",
+        "en": "EN"
+    },
+    "public": {
+        "layout": {
+            "brand": "BTH",
+            "catalog": "Каталог",
+            "admin": "Админ",
+            "copyright": "© {year} BTH Catalog",
+            "built_with": "Сделано на Laravel · Vue 3 · Inertia · Tailwind"
+        },
+        "home": {
+            "page_title": "Товары",
+            "kicker": "Каталог",
+            "title_part_1": "Наш",
+            "title_highlight": "каталог товаров",
+            "subtitle": "Просматривайте, фильтруйте и ищите среди всех наших товаров — всё, что нужно, и ничего лишнего.",
+            "search_placeholder": "Поиск по названию…",
+            "reset": "Сбросить",
+            "empty_title": "Ничего не найдено",
+            "empty_description": "Попробуйте другой запрос или сбросьте фильтры.",
+            "empty_action": "Сбросить фильтры",
+            "showing": "Показано {from} – {to} из {total}"
+        },
+        "detail": {
+            "page_title_fallback": "Товар",
+            "breadcrumb_catalog": "Каталог",
+            "product_fallback": "Товар",
+            "incl_taxes": "включая все налоги",
+            "description": "Описание",
+            "no_description": "Описание не указано.",
+            "product_id": "ID товара",
+            "added": "Добавлен",
+            "go_back": "Назад",
+            "error_hint": "Товар мог быть удалён или ссылка неверна."
+        },
+        "card": {
+            "view": "Смотреть →"
+        },
+        "filter": {
+            "all_categories": "Все категории",
+            "category_label": "Категория"
+        }
+    },
+    "pagination": {
+        "page": "Страница",
+        "prev": "Назад",
+        "next": "Вперёд"
+    },
+    "auth": {
+        "login": {
+            "page_title": "Вход в админку",
+            "back_to_catalog": "Назад в каталог",
+            "brand_admin": "Админ",
+            "left_title_1": "Управляйте",
+            "left_title_highlight": "каталогом",
+            "left_title_2": "уверенно.",
+            "left_subtitle": "Войдите, чтобы создавать, редактировать и курировать товары, которые видят посетители публичного каталога.",
+            "feature_1": "Безопасная авторизация через Sanctum-токены",
+            "feature_2": "Живой поиск и фильтрация",
+            "feature_3": "Мягкое удаление — ничего не теряется",
+            "welcome": "С возвращением",
+            "welcome_subtitle": "Войдите в админку, чтобы управлять товарами.",
+            "email": "Почта",
+            "password": "Пароль",
+            "email_placeholder": "admin@admin.test",
+            "password_placeholder": "••••••••",
+            "sign_in": "Войти",
+            "signing_in": "Вход…",
+            "login_failed": "Не удалось войти",
+            "demo_credentials": "Демо-доступ"
+        }
+    },
+    "admin": {
+        "layout": {
+            "admin_pill": "Админ",
+            "products": "Товары",
+            "view_public": "К публичному каталогу →",
+            "log_out": "Выйти"
+        },
+        "list": {
+            "page_title": "Товары · Админ",
+            "kicker": "Админ",
+            "title": "Товары",
+            "total": "Товаров в каталоге: {count}",
+            "add": "Добавить товар",
+            "col_product": "Товар",
+            "col_category": "Категория",
+            "col_price": "Цена",
+            "empty_title": "Товаров пока нет",
+            "empty_description": "Добавьте первый товар в каталог.",
+            "empty_action": "Добавить товар",
+            "action_edit": "Редактировать",
+            "action_delete": "Удалить"
+        },
+        "form": {
+            "back_to_products": "Назад к товарам",
+            "kicker_new": "Новый",
+            "kicker_edit": "Редактирование",
+            "title_new": "Создать товар",
+            "title_edit": "Редактировать товар",
+            "subtitle_new": "Добавьте новый товар в каталог.",
+            "subtitle_edit": "Обновите информацию о товаре.",
+            "section_basic_title": "Основное",
+            "section_basic_subtitle": "Название и категория обязательны и показываются публично.",
+            "field_name": "Название",
+            "field_name_placeholder": "например, Беспроводные наушники",
+            "field_category": "Категория",
+            "field_category_placeholder": "— Выберите категорию —",
+            "field_description": "Описание",
+            "field_description_optional": "(опционально)",
+            "field_description_placeholder": "Краткое и полезное описание товара…",
+            "section_pricing_title": "Цена",
+            "section_pricing_subtitle": "Должна быть больше нуля. Хранится как decimal(10, 2).",
+            "field_price": "Цена",
+            "cancel": "Отмена",
+            "save_changes": "Сохранить изменения",
+            "create": "Создать товар",
+            "saving": "Сохранение…",
+            "save_failed": "Не удалось сохранить",
+            "load_failed": "Не удалось загрузить товар"
+        },
+        "delete_modal": {
+            "title": "Удалить товар",
+            "confirm": "Вы уверены, что хотите удалить {name}? Администратор сможет восстановить его позже.",
+            "product_fallback": "этот товар",
+            "cancel": "Отмена",
+            "delete": "Удалить товар",
+            "deleting": "Удаление…"
+        }
+    }
+}

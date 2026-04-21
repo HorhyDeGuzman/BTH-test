@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ArrowRightIcon } from '@heroicons/vue/20/solid';
+import { useI18n } from 'vue-i18n';
+import LocaleSwitcher from '@/common/components/locale-switcher.vue';
+
+const { t } = useI18n();
+const year = new Date().getFullYear();
 </script>
 
 <template>
@@ -16,17 +21,20 @@ import { ArrowRightIcon } from '@heroicons/vue/20/solid';
                         B
                     </span>
                     <div class="flex items-baseline gap-1.5">
-                        <span class="font-semibold tracking-tight text-slate-900">BTH</span>
-                        <span class="text-sm text-slate-500">Catalog</span>
+                        <span class="font-semibold tracking-tight text-slate-900">
+                            {{ t('public.layout.brand') }}
+                        </span>
+                        <span class="text-sm text-slate-500">
+                            {{ t('public.layout.catalog') }}
+                        </span>
                     </div>
                 </Link>
 
                 <nav class="flex items-center gap-2">
+                    <LocaleSwitcher />
                     <Link href="/login" class="btn-ghost">
-                        <span>Admin</span>
-                        <ArrowRightIcon
-                            class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-                        />
+                        <span>{{ t('public.layout.admin') }}</span>
+                        <ArrowRightIcon class="h-4 w-4" />
                     </Link>
                 </nav>
             </div>
@@ -40,8 +48,8 @@ import { ArrowRightIcon } from '@heroicons/vue/20/solid';
             <div
                 class="container flex flex-col items-center justify-between gap-3 text-sm text-slate-500 sm:flex-row"
             >
-                <p>&copy; {{ new Date().getFullYear() }} BTH Catalog</p>
-                <p class="text-xs">Built with Laravel · Vue 3 · Inertia · Tailwind</p>
+                <p>{{ t('public.layout.copyright', { year }) }}</p>
+                <p class="text-xs">{{ t('public.layout.built_with') }}</p>
             </div>
         </footer>
     </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Product } from '../models';
 import { formatPrice } from '../helpers/format-price';
 
@@ -8,8 +9,8 @@ const props = defineProps<{
     product: Product;
 }>();
 
-// Derive a stable color pair from the product id so cards look varied
-// without needing actual images.
+const { t } = useI18n();
+
 const gradient = computed(() => {
     const palettes = [
         'from-indigo-500/90 via-violet-500/80 to-fuchsia-500/70',
@@ -30,7 +31,6 @@ const initial = computed(() => props.product.name.charAt(0).toUpperCase());
         :href="`/product/${product.id}`"
         class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition-colors duration-150 hover:border-slate-300 hover:shadow-lift"
     >
-        <!-- Visual placeholder (no images in DB yet) -->
         <div
             :class="[
                 'relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br overflow-hidden',
@@ -69,7 +69,7 @@ const initial = computed(() => props.product.name.charAt(0).toUpperCase());
                 <span
                     class="text-xs font-medium text-slate-400 transition group-hover:text-brand-500"
                 >
-                    View →
+                    {{ t('public.card.view') }}
                 </span>
             </div>
         </div>

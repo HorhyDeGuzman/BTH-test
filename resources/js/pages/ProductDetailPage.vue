@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted } from 'vue';
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/vue/20/solid';
+import { useI18n } from 'vue-i18n';
 import PublicLayout from '@/common/layouts/public-layout.vue';
 import { useProductsApi } from '@/modules/products';
 import { formatPrice } from '@/modules/products/helpers/format-price';
@@ -10,9 +11,9 @@ const props = defineProps<{
     id: number;
 }>();
 
-// Return to whichever page brought the viewer here (public catalog or the
-// admin list). Falls back to the public catalog when there's no history
-// (e.g. the user opened the detail page in a fresh tab).
+const { t, locale } = useI18n();
+const { current: product, loading, error, fetchOne } = useProductsApi();
+
 function goBack(): void {
     if (typeof window !== 'undefined' && window.history.length > 1) {
         window.history.back();
@@ -20,8 +21,6 @@ function goBack(): void {
         router.visit('/');
     }
 }
-
-const { current: product, loading, error, fetchOne } = useProductsApi();
 
 const gradient = computed(() => {
     const palettes = [
@@ -39,12 +38,17 @@ const initial = computed(() => product.value?.name.charAt(0).toUpperCase() ?? '?
 
 const createdDate = computed(() => {
     if (!product.value?.created_at) return null;
-    return new Date(product.value.created_at).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
+    return new Date(product.value.created_at).toLocaleDateString(
+        locale.value === 'ru' ? 'ru-RU' : 'en-US',
+        {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        },
+    );
 });
+
+const pageTitle = computed(() => product.value?.name ?? t('public.detail.page_title_fallback'));
 
 onMounted(() => {
     fetchOne(Number(props.id)).catch(() => {
@@ -54,25 +58,25 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head :title="product?.name ?? 'Product'" />
+    <Head :title="pageTitle" />
 
     <PublicLayout>
         <div class="container py-10">
-            <!-- Breadcrumbs -->
             <nav class="mb-8 flex items-center gap-2 text-sm text-slate-500">
-                <Link href="/" class="transition hover:text-slate-900">Catalog</Link>
+                <Link href="/" class="transition hover:text-slate-900">
+                    {{ t('public.detail.breadcrumb_catalog') }}
+                </Link>
                 <span class="text-slate-300">/</span>
                 <span class="truncate text-slate-900">
-                    {{ product?.name ?? 'Product' }}
+                    {{ product?.name ?? t('public.detail.product_fallback') }}
                 </span>
             </nav>
 
-            <!-- Loading skeleton -->
             <div
                 v-if="loading && !product"
-                class="grid gap-10 lg:grid-cols-5 animate-fade-in"
+                class="grid gap-10 animate-fade-in lg:grid-cols-5"
             >
-                <div class="skeleton aspect-square lg:col-span-2 rounded-2xl"></div>
+                <div class="skeleton aspect-square rounded-2xl lg:col-span-2"></div>
                 <div class="flex flex-col gap-4 lg:col-span-3">
                     <div class="skeleton h-4 w-24"></div>
                     <div class="skeleton h-10 w-3/4"></div>
@@ -81,7 +85,6 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- Error -->
             <div
                 v-else-if="error"
                 class="mx-auto max-w-xl rounded-2xl border border-rose-200 bg-rose-50/70 p-8 text-center"
@@ -95,20 +98,18 @@ onMounted(() => {
                     {{ error }}
                 </h2>
                 <p class="mt-1 text-sm text-rose-700">
-                    The product may have been removed or the link is invalid.
+                    {{ t('public.detail.error_hint') }}
                 </p>
                 <button type="button" class="btn-secondary mt-6" @click="goBack">
                     <ArrowLeftIcon class="h-4 w-4" />
-                    Go back
+                    {{ t('public.detail.go_back') }}
                 </button>
             </div>
 
-            <!-- Detail -->
             <article
                 v-else-if="product"
-                class="grid gap-10 lg:grid-cols-5 animate-fade-in"
+                class="grid gap-10 animate-fade-in lg:grid-cols-5"
             >
-                <!-- Visual -->
                 <div class="lg:col-span-2">
                     <div
                         :class="[
@@ -127,7 +128,6 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Body -->
                 <div class="flex flex-col gap-6 lg:col-span-3">
                     <div>
                         <span v-if="product.category" class="chip-brand">
@@ -146,12 +146,14 @@ onMounted(() => {
                         >
                             {{ formatPrice(product.price) }}
                         </span>
-                        <span class="text-sm text-slate-400">incl. all taxes</span>
+                        <span class="text-sm text-slate-400">
+                            {{ t('public.detail.incl_taxes') }}
+                        </span>
                     </div>
 
                     <div class="card p-6">
                         <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            Description
+                            {{ t('public.detail.description') }}
                         </h2>
                         <p
                             v-if="product.description"
@@ -160,20 +162,20 @@ onMounted(() => {
                             {{ product.description }}
                         </p>
                         <p v-else class="mt-3 italic text-slate-400">
-                            No description provided.
+                            {{ t('public.detail.no_description') }}
                         </p>
                     </div>
 
                     <dl class="grid grid-cols-2 gap-4 text-sm">
                         <div class="card p-4">
                             <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">
-                                Product ID
+                                {{ t('public.detail.product_id') }}
                             </dt>
                             <dd class="mt-1 font-mono text-slate-900">#{{ product.id }}</dd>
                         </div>
                         <div v-if="createdDate" class="card p-4">
                             <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">
-                                Added
+                                {{ t('public.detail.added') }}
                             </dt>
                             <dd class="mt-1 text-slate-900">{{ createdDate }}</dd>
                         </div>
@@ -181,7 +183,7 @@ onMounted(() => {
 
                     <button type="button" class="btn-ghost self-start" @click="goBack">
                         <ArrowLeftIcon class="h-4 w-4" />
-                        Go back
+                        {{ t('public.detail.go_back') }}
                     </button>
                 </div>
             </article>

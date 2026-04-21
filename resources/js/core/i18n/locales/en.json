@@ -1,0 +1,138 @@
+{
+    "common": {
+        "admin": "Admin",
+        "loading": "Loading…"
+    },
+    "locale": {
+        "ru": "RU",
+        "en": "EN"
+    },
+    "public": {
+        "layout": {
+            "brand": "BTH",
+            "catalog": "Catalog",
+            "admin": "Admin",
+            "copyright": "© {year} BTH Catalog",
+            "built_with": "Built with Laravel · Vue 3 · Inertia · Tailwind"
+        },
+        "home": {
+            "page_title": "Products",
+            "kicker": "Catalog",
+            "title_part_1": "Explore our",
+            "title_highlight": "product catalog",
+            "subtitle": "Browse, filter and search through our selection. Everything you need, nothing you don't.",
+            "search_placeholder": "Search products by name…",
+            "reset": "Reset",
+            "empty_title": "No products found",
+            "empty_description": "Try a different search term or clear the filters.",
+            "empty_action": "Reset filters",
+            "showing": "Showing {from} – {to} of {total}"
+        },
+        "detail": {
+            "page_title_fallback": "Product",
+            "breadcrumb_catalog": "Catalog",
+            "product_fallback": "Product",
+            "incl_taxes": "incl. all taxes",
+            "description": "Description",
+            "no_description": "No description provided.",
+            "product_id": "Product ID",
+            "added": "Added",
+            "go_back": "Go back",
+            "error_hint": "The product may have been removed or the link is invalid."
+        },
+        "card": {
+            "view": "View →"
+        },
+        "filter": {
+            "all_categories": "All categories",
+            "category_label": "Category"
+        }
+    },
+    "pagination": {
+        "page": "Page",
+        "prev": "Prev",
+        "next": "Next"
+    },
+    "auth": {
+        "login": {
+            "page_title": "Admin login",
+            "back_to_catalog": "Back to catalog",
+            "brand_admin": "Admin",
+            "left_title_1": "Manage your",
+            "left_title_highlight": "catalog",
+            "left_title_2": "with confidence.",
+            "left_subtitle": "Sign in to create, update and curate the products your customers see on the public catalog.",
+            "feature_1": "Secure Sanctum token authentication",
+            "feature_2": "Live search & filtering",
+            "feature_3": "Soft deletes — nothing is lost",
+            "welcome": "Welcome back",
+            "welcome_subtitle": "Sign in to the admin area to manage products.",
+            "email": "Email",
+            "password": "Password",
+            "email_placeholder": "admin@admin.test",
+            "password_placeholder": "••••••••",
+            "sign_in": "Sign in",
+            "signing_in": "Signing in…",
+            "login_failed": "Login failed",
+            "demo_credentials": "Demo credentials"
+        }
+    },
+    "admin": {
+        "layout": {
+            "admin_pill": "Admin",
+            "products": "Products",
+            "view_public": "View public catalog →",
+            "log_out": "Log out"
+        },
+        "list": {
+            "page_title": "Products · Admin",
+            "kicker": "Admin",
+            "title": "Products",
+            "total": "{count} products in catalog",
+            "add": "Add product",
+            "col_product": "Product",
+            "col_category": "Category",
+            "col_price": "Price",
+            "empty_title": "No products yet",
+            "empty_description": "Get started by adding your first product to the catalog.",
+            "empty_action": "Add product",
+            "action_edit": "Edit",
+            "action_delete": "Delete"
+        },
+        "form": {
+            "back_to_products": "Back to products",
+            "kicker_new": "New",
+            "kicker_edit": "Edit",
+            "title_new": "Create product",
+            "title_edit": "Edit product",
+            "subtitle_new": "Add a new product to the catalog.",
+            "subtitle_edit": "Update the details for this product.",
+            "section_basic_title": "Basic information",
+            "section_basic_subtitle": "Name and category are required and shown publicly.",
+            "field_name": "Name",
+            "field_name_placeholder": "e.g. Wireless headphones",
+            "field_category": "Category",
+            "field_category_placeholder": "— Select a category —",
+            "field_description": "Description",
+            "field_description_optional": "(optional)",
+            "field_description_placeholder": "A short, helpful description of the product…",
+            "section_pricing_title": "Pricing",
+            "section_pricing_subtitle": "Must be greater than zero. Stored as decimal(10, 2).",
+            "field_price": "Price",
+            "cancel": "Cancel",
+            "save_changes": "Save changes",
+            "create": "Create product",
+            "saving": "Saving…",
+            "save_failed": "Save failed",
+            "load_failed": "Failed to load product"
+        },
+        "delete_modal": {
+            "title": "Delete product",
+            "confirm": "Are you sure you want to delete {name}? This can be restored by an administrator later.",
+            "product_fallback": "this product",
+            "cancel": "Cancel",
+            "delete": "Delete product",
+            "deleting": "Deleting…"
+        }
+    }
+}
