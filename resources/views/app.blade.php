@@ -10,11 +10,7 @@
         <script>
             (function () {
                 try {
-                    var stored = localStorage.getItem('theme') || 'system';
-                    var isDark =
-                        stored === 'dark' ||
-                        (stored === 'system' &&
-                            window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    var isDark = localStorage.getItem('theme') === 'dark';
                     document.documentElement.classList.toggle('dark', isDark);
                     document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
                 } catch (e) {}

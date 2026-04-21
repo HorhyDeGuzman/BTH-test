@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue';
 
-export const THEMES = ['light', 'system', 'dark'] as const;
+export const THEMES = ['light', 'dark'] as const;
 export type Theme = (typeof THEMES)[number];
 
-export const DEFAULT_THEME: Theme = 'system';
+export const DEFAULT_THEME: Theme = 'light';
 const THEME_STORAGE_KEY = 'theme';
 
 function readStoredTheme(): Theme {
@@ -14,38 +14,14 @@ function readStoredTheme(): Theme {
         : DEFAULT_THEME;
 }
 
-function systemPrefersDark(): boolean {
-    return (
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-    );
-}
-
 // Module-level ref — every useTheme() call shares the same state.
 const theme = ref<Theme>(readStoredTheme());
-
-const isDark = computed(() =>
-    theme.value === 'dark' || (theme.value === 'system' && systemPrefersDark()),
-);
+const isDark = computed(() => theme.value === 'dark');
 
 function applyTheme(): void {
     if (typeof document === 'undefined') return;
     document.documentElement.classList.toggle('dark', isDark.value);
     document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light';
-}
-
-// React to system-theme changes while the user is on the 'system' setting.
-if (typeof window !== 'undefined') {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => {
-        if (theme.value === 'system') applyTheme();
-    };
-    if (typeof media.addEventListener === 'function') {
-        media.addEventListener('change', onChange);
-    } else if (typeof (media as MediaQueryList).addListener === 'function') {
-        // Older Safari
-        (media as MediaQueryList).addListener(onChange);
-    }
 }
 
 export function setTheme(next: Theme): void {
@@ -56,14 +32,17 @@ export function setTheme(next: Theme): void {
     applyTheme();
 }
 
+export function toggleTheme(): void {
+    setTheme(theme.value === 'dark' ? 'light' : 'dark');
+}
+
 export function useTheme() {
-    return { theme, isDark, setTheme };
+    return { theme, isDark, setTheme, toggleTheme };
 }
 
 /**
- * Called once from app.ts on boot so the attribute matches the initial
- * computed value (the blade inline script already sets the class before
- * CSS loads — this keeps <style> color-scheme in sync too).
+ * Called once from app.ts on boot so the style.colorScheme attribute
+ * is kept in sync with the class the blade inline script already set.
  */
 export function applyInitialTheme(): void {
     applyTheme();

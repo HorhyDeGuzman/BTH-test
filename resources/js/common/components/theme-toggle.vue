@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/vue/20/solid';
+import { MoonIcon, SunIcon } from '@heroicons/vue/20/solid';
 import { useI18n } from 'vue-i18n';
 import { setTheme, useTheme, type Theme } from '@/core/theme';
 
@@ -8,7 +8,6 @@ const { theme } = useTheme();
 
 const items: Array<{ value: Theme; icon: typeof SunIcon }> = [
     { value: 'light', icon: SunIcon },
-    { value: 'system', icon: ComputerDesktopIcon },
     { value: 'dark', icon: MoonIcon },
 ];
 

@@ -10,7 +10,6 @@
     "theme": {
         "label": "Theme",
         "light": "Light",
-        "system": "System",
         "dark": "Dark"
     },
     "public": {
