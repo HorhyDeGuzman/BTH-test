@@ -1,13 +1,10 @@
-export { default as ApplicationLogo } from './application-logo.vue';
-export { default as Checkbox } from './checkbox.vue';
 export { default as DangerButton } from './danger-button.vue';
-export { default as Dropdown } from './dropdown.vue';
-export { default as DropdownLink } from './dropdown-link.vue';
 export { default as InputError } from './input-error.vue';
 export { default as InputLabel } from './input-label.vue';
+export { default as LocaleSwitcher } from './locale-switcher.vue';
 export { default as Modal } from './modal.vue';
-export { default as NavLink } from './nav-link.vue';
+export { default as Pagination } from './pagination.vue';
 export { default as PrimaryButton } from './primary-button.vue';
-export { default as ResponsiveNavLink } from './responsive-nav-link.vue';
 export { default as SecondaryButton } from './secondary-button.vue';
 export { default as TextInput } from './text-input.vue';
+export { default as ThemeToggle } from './theme-toggle.vue';

@@ -25,15 +25,14 @@ class HandleInertiaRequests extends Middleware
     /**
      * Define the props that are shared by default.
      *
+     * Admin auth is token-based (Sanctum), stored on the client in
+     * localStorage — there's no useful session-scoped prop to share from
+     * the server. Keep the default shape from the parent middleware.
+     *
      * @return array<string, mixed>
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
-            'auth' => [
-                'user' => $request->user(),
-            ],
-        ];
+        return parent::share($request);
     }
 }
