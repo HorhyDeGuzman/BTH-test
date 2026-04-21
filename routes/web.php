@@ -27,6 +27,15 @@ Route::get('/product/{id}', fn (int $id) => Inertia::render('ProductDetailPage',
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/products', fn () => Inertia::render('admin/ProductListPage'))
         ->name('products.index');
+
+    Route::get('/products/create', fn () => Inertia::render('admin/ProductFormPage'))
+        ->name('products.create');
+
+    Route::get('/products/{id}/edit', fn (int $id) => Inertia::render('admin/ProductFormPage', [
+        'id' => $id,
+    ]))
+        ->whereNumber('id')
+        ->name('products.edit');
 });
 
 /*
