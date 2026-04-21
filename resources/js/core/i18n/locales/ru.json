@@ -69,7 +69,7 @@
             "welcome_subtitle": "Войдите в админку, чтобы управлять товарами.",
             "email": "Почта",
             "password": "Пароль",
-            "email_placeholder": "admin@admin.test",
+            "email_placeholder": "admin{'@'}admin.test",
             "password_placeholder": "••••••••",
             "sign_in": "Войти",
             "signing_in": "Вход…",

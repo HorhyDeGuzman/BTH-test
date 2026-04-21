@@ -69,7 +69,7 @@
             "welcome_subtitle": "Sign in to the admin area to manage products.",
             "email": "Email",
             "password": "Password",
-            "email_placeholder": "admin@admin.test",
+            "email_placeholder": "admin{'@'}admin.test",
             "password_placeholder": "••••••••",
             "sign_in": "Sign in",
             "signing_in": "Signing in…",
