@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
@@ -17,15 +16,18 @@ class ProductSeeder extends Seeder
             return;
         }
 
-        $catalog = $this->catalog();
-
-        foreach ($catalog as $item) {
+        foreach ($this->catalog() as $index => $item) {
             $categoryId = $categoriesByEn[$item['category']] ?? null;
             if (! $categoryId) {
                 continue;
             }
 
-            $slug = Str::slug($item['name_en']);
+            // loremflickr serves tag-matched Flickr photos. 'lock' makes the
+            // returned image deterministic per product, so reseeding doesn't
+            // shuffle the catalog thumbnails.
+            $keyword = $item['image_keyword'];
+            $lock = $index + 1;
+            $imageUrl = "https://loremflickr.com/600/450/{$keyword}?lock={$lock}";
 
             Product::updateOrCreate(
                 ['name' => $item['name']],
@@ -34,7 +36,7 @@ class ProductSeeder extends Seeder
                     'description' => $item['description'],
                     'description_en' => $item['description_en'],
                     'price' => $item['price'],
-                    'image_url' => "https://picsum.photos/seed/{$slug}/600/450",
+                    'image_url' => $imageUrl,
                     'category_id' => $categoryId,
                 ],
             );
@@ -50,6 +52,7 @@ class ProductSeeder extends Seeder
             // Electronics
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'headphones',
                 'name' => 'Беспроводные наушники Sony WH-1000XM5',
                 'name_en' => 'Sony WH-1000XM5 Wireless Headphones',
                 'description' => 'Премиальные наушники с шумоподавлением, до 30 часов работы и поддержкой LDAC.',
@@ -58,6 +61,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'iphone',
                 'name' => 'Apple iPhone 15 Pro, 256 ГБ',
                 'name_en' => 'Apple iPhone 15 Pro, 256 GB',
                 'description' => 'Флагман с титановым корпусом, процессором A17 Pro и системой камер Pro.',
@@ -66,6 +70,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'macbook',
                 'name' => 'MacBook Air 13" M3, 16 ГБ / 512 ГБ',
                 'name_en' => 'MacBook Air 13" M3, 16 GB / 512 GB',
                 'description' => 'Ультратонкий ноутбук на чипе Apple M3 с тихой пассивной системой охлаждения.',
@@ -74,6 +79,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'television',
                 'name' => 'Телевизор Samsung 55" 4K QLED',
                 'name_en' => 'Samsung 55" 4K QLED Smart TV',
                 'description' => 'Яркий QLED-экран с поддержкой HDR10+, 120 Гц и голосовым помощником.',
@@ -82,6 +88,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'computer,mouse',
                 'name' => 'Мышь Logitech MX Master 3S',
                 'name_en' => 'Logitech MX Master 3S Mouse',
                 'description' => 'Эргономичная беспроводная мышь с тихими кликами и MagSpeed-колесом.',
@@ -90,6 +97,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'ipad,tablet',
                 'name' => 'Apple iPad Air 11"',
                 'name_en' => 'Apple iPad Air 11"',
                 'description' => 'Лёгкий планшет с экраном Liquid Retina и поддержкой Apple Pencil Pro.',
@@ -98,6 +106,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Electronics',
+                'image_keyword' => 'charger,battery',
                 'name' => 'Повербанк Anker 737, 24 000 мА·ч',
                 'name_en' => 'Anker 737 Power Bank, 24,000 mAh',
                 'description' => 'Ёмкий повербанк с двумя USB-C и быстрой зарядкой мощностью 140 Вт.',
@@ -108,6 +117,7 @@ class ProductSeeder extends Seeder
             // Books
             [
                 'category' => 'Books',
+                'image_keyword' => 'book,reading',
                 'name' => '«Чистый код», Роберт Мартин',
                 'name_en' => 'Clean Code, Robert C. Martin',
                 'description' => 'Классика о том, как писать поддерживаемый и понятный код.',
@@ -116,6 +126,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Books',
+                'image_keyword' => 'book,desk',
                 'name' => '«Атомные привычки», Джеймс Клир',
                 'name_en' => 'Atomic Habits, James Clear',
                 'description' => 'Простая система изменения привычек шаг за шагом.',
@@ -124,6 +135,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Books',
+                'image_keyword' => 'bookshelf',
                 'name' => '«Программист-прагматик»',
                 'name_en' => 'The Pragmatic Programmer',
                 'description' => 'Классическая книга для инженеров о мастерстве и ремесле.',
@@ -132,6 +144,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Books',
+                'image_keyword' => 'novel,library',
                 'name' => '«1984», Джордж Оруэлл',
                 'name_en' => '1984, George Orwell',
                 'description' => 'Дистопия о тоталитаризме, наблюдении и правде.',
@@ -140,6 +153,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Books',
+                'image_keyword' => 'book,coffee',
                 'name' => '«Sapiens. Краткая история человечества»',
                 'name_en' => 'Sapiens: A Brief History of Humankind',
                 'description' => 'Увлекательный рассказ о том, как Homo sapiens захватил планету.',
@@ -148,6 +162,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Books',
+                'image_keyword' => 'books,stack',
                 'name' => 'Гарри Поттер — комплект из 7 книг',
                 'name_en' => 'Harry Potter 7-Book Box Set',
                 'description' => 'Полная коллекция романов о волшебном мире Хогвартса.',
@@ -158,6 +173,7 @@ class ProductSeeder extends Seeder
             // Clothing
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'jeans,denim',
                 'name' => 'Джинсы Levi\'s 501 Original',
                 'name_en' => "Levi's 501 Original Jeans",
                 'description' => 'Классические прямые джинсы из плотного хлопкового денима.',
@@ -166,6 +182,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'tshirt,athletic',
                 'name' => 'Футболка Nike Dri-FIT',
                 'name_en' => 'Nike Dri-FIT T-Shirt',
                 'description' => 'Лёгкая спортивная футболка с влагоотводящей тканью.',
@@ -174,6 +191,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'jacket,fleece',
                 'name' => 'Флисовая куртка Patagonia Better Sweater',
                 'name_en' => 'Patagonia Better Sweater Fleece Jacket',
                 'description' => 'Тёплая флисовая куртка из переработанного полиэстера.',
@@ -182,6 +200,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'sneakers,shoes',
                 'name' => 'Кроссовки Adidas Ultraboost 23',
                 'name_en' => 'Adidas Ultraboost 23 Running Shoes',
                 'description' => 'Беговые кроссовки с энергичной подошвой Boost и сеткой Primeknit.',
@@ -190,6 +209,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'sunglasses',
                 'name' => 'Солнцезащитные очки Ray-Ban Aviator',
                 'name_en' => 'Ray-Ban Aviator Sunglasses',
                 'description' => 'Классические очки-авиаторы в металлической оправе, UV-защита 100%.',
@@ -198,6 +218,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Clothing',
+                'image_keyword' => 'shirt,cotton',
                 'name' => 'Рубашка Uniqlo Oxford',
                 'name_en' => 'Uniqlo Oxford Shirt',
                 'description' => 'Повседневная рубашка из хлопка оксфорд, на пуговицах.',
@@ -208,6 +229,7 @@ class ProductSeeder extends Seeder
             // Home & Kitchen
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'vacuum,cleaner',
                 'name' => 'Пылесос Dyson V15 Detect',
                 'name_en' => 'Dyson V15 Detect Cordless Vacuum',
                 'description' => 'Беспроводной пылесос с лазерной подсветкой пыли и мощной тягой.',
@@ -216,6 +238,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'kitchen,cooking',
                 'name' => 'Мультиварка Instant Pot Duo, 6 л',
                 'name_en' => 'Instant Pot Duo 6-Quart Multi-Cooker',
                 'description' => 'Скороварка 7-в-1: тушение, рис, йогурт, стерилизация и многое другое.',
@@ -224,6 +247,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'mixer,baking',
                 'name' => 'Миксер KitchenAid Artisan',
                 'name_en' => 'KitchenAid Artisan Stand Mixer',
                 'description' => 'Планетарный миксер объёмом 4.8 л с металлическим корпусом.',
@@ -232,6 +256,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'fryer,kitchen',
                 'name' => 'Аэрогриль Philips Airfryer XXL',
                 'name_en' => 'Philips Airfryer XXL',
                 'description' => 'Большая аэрогриль-фритюрница для здоровой готовки без масла.',
@@ -240,6 +265,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'blender,smoothie',
                 'name' => 'Блендер Ninja Professional Plus',
                 'name_en' => 'Ninja Professional Plus Blender',
                 'description' => 'Мощный стационарный блендер на 1400 Вт с функцией колки льда.',
@@ -248,6 +274,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Home & Kitchen',
+                'image_keyword' => 'cookware,pot',
                 'name' => 'Чугунная кастрюля Le Creuset, 5 л',
                 'name_en' => 'Le Creuset 5.3 L Dutch Oven',
                 'description' => 'Эмалированная чугунная кастрюля, подходит для всех типов плит.',
@@ -258,6 +285,7 @@ class ProductSeeder extends Seeder
             // Sports & Outdoors
             [
                 'category' => 'Sports & Outdoors',
+                'image_keyword' => 'thermos,mug',
                 'name' => 'Термокружка Yeti Rambler, 590 мл',
                 'name_en' => 'Yeti Rambler 20 oz Tumbler',
                 'description' => 'Стальная термокружка с двойной изоляцией, держит тепло до 12 часов.',
@@ -266,6 +294,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Sports & Outdoors',
+                'image_keyword' => 'backpack,hiking',
                 'name' => 'Туристический рюкзак Osprey Atmos AG 65',
                 'name_en' => 'Osprey Atmos AG 65 Backpack',
                 'description' => 'Походный рюкзак с подвеской Anti-Gravity и регулируемой поясной системой.',
@@ -274,6 +303,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Sports & Outdoors',
+                'image_keyword' => 'tennis,racket',
                 'name' => 'Теннисная ракетка Wilson Pro Staff',
                 'name_en' => 'Wilson Pro Staff Tennis Racket',
                 'description' => 'Профессиональная графитовая ракетка с идеальным балансом.',
@@ -282,6 +312,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Sports & Outdoors',
+                'image_keyword' => 'smartwatch,fitness',
                 'name' => 'Спортивные часы Garmin Forerunner 265',
                 'name_en' => 'Garmin Forerunner 265',
                 'description' => 'GPS-часы для бега с AMOLED-экраном и мульти-частотным позиционированием.',
@@ -290,6 +321,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Sports & Outdoors',
+                'image_keyword' => 'massage,spa',
                 'name' => 'Перкуссионный массажёр Theragun Prime',
                 'name_en' => 'Theragun Prime Massage Gun',
                 'description' => 'Массажёр для восстановления мышц с пятью скоростями и тихим мотором.',
@@ -300,6 +332,7 @@ class ProductSeeder extends Seeder
             // Toys & Games
             [
                 'category' => 'Toys & Games',
+                'image_keyword' => 'lego,toys',
                 'name' => 'LEGO Star Wars: Тысячелетний сокол',
                 'name_en' => 'LEGO Star Wars Millennium Falcon',
                 'description' => 'Детализированный конструктор для коллекционеров, 1 353 детали.',
@@ -308,6 +341,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Toys & Games',
+                'image_keyword' => 'boardgame,strategy',
                 'name' => 'Настольная игра «Колонизаторы»',
                 'name_en' => 'Catan Board Game',
                 'description' => 'Классическая стратегия про освоение острова, от 3 до 4 игроков.',
@@ -316,6 +350,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Toys & Games',
+                'image_keyword' => 'nintendo,console',
                 'name' => 'Nintendo Switch OLED',
                 'name_en' => 'Nintendo Switch OLED',
                 'description' => 'Портативная консоль с ярким 7" OLED-экраном и улучшенным звуком.',
@@ -324,6 +359,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Toys & Games',
+                'image_keyword' => 'monopoly,boardgame',
                 'name' => 'Монополия — классика',
                 'name_en' => 'Monopoly Classic Board Game',
                 'description' => 'Легендарная семейная настольная игра про недвижимость.',
@@ -334,6 +370,7 @@ class ProductSeeder extends Seeder
             // Beauty
             [
                 'category' => 'Beauty',
+                'image_keyword' => 'skincare,serum',
                 'name' => 'Сыворотка The Ordinary Hyaluronic Acid 2%',
                 'name_en' => 'The Ordinary Hyaluronic Acid 2% + B5',
                 'description' => 'Увлажняющая сыворотка с гиалуроновой кислотой и витамином B5.',
@@ -342,6 +379,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Beauty',
+                'image_keyword' => 'sunscreen,beach',
                 'name' => 'Санскрин La Roche-Posay Anthelios SPF 50',
                 'name_en' => 'La Roche-Posay Anthelios Sunscreen SPF 50',
                 'description' => 'Солнцезащитный крем для лица с широким спектром защиты.',
@@ -350,6 +388,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Beauty',
+                'image_keyword' => 'hairdryer,salon',
                 'name' => 'Фен Dyson Supersonic',
                 'name_en' => 'Dyson Supersonic Hair Dryer',
                 'description' => 'Фен с интеллектуальным контролем температуры и насадками Magnetic.',
@@ -358,6 +397,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Beauty',
+                'image_keyword' => 'cosmetics,makeup',
                 'name' => 'Тональный крем Fenty Beauty Pro Filt\'r',
                 'name_en' => "Fenty Beauty Pro Filt'r Foundation",
                 'description' => 'Матовый тональный крем с 40 оттенками.',
@@ -368,6 +408,7 @@ class ProductSeeder extends Seeder
             // Automotive
             [
                 'category' => 'Automotive',
+                'image_keyword' => 'tire,wheel',
                 'name' => 'Летние шины Michelin Pilot Sport 4',
                 'name_en' => 'Michelin Pilot Sport 4 Tires',
                 'description' => 'Производительные летние шины с отличным сцеплением.',
@@ -376,6 +417,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Automotive',
+                'image_keyword' => 'windshield,car',
                 'name' => 'Стеклоочистители Bosch Aerotwin, пара',
                 'name_en' => 'Bosch Aerotwin Wiper Blades (pair)',
                 'description' => 'Бескаркасные щётки с плотным прилеганием к стеклу.',
@@ -384,6 +426,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Automotive',
+                'image_keyword' => 'suv,roof',
                 'name' => 'Багажный бокс Thule Motion XT XL',
                 'name_en' => 'Thule Motion XT XL Roof Cargo Box',
                 'description' => 'Аэродинамический багажный бокс на крышу объёмом 500 л.',
@@ -392,6 +435,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'category' => 'Automotive',
+                'image_keyword' => 'carwash,detailing',
                 'name' => 'Набор для мойки авто Chemical Guys',
                 'name_en' => 'Chemical Guys Car Wash Kit',
                 'description' => 'Полный набор для мойки и ухода: шампунь, микрофибра, аппликаторы.',
