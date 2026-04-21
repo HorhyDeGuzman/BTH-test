@@ -11,12 +11,13 @@ import {
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/common/layouts/admin-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
+import { pickLocalized } from '@/common/helpers';
 import { useProductsApi } from '@/modules/products';
 import type { Product } from '@/modules/products';
 import DeleteProductModal from '@/modules/products/components/delete-product-modal.vue';
 import { formatPrice } from '@/modules/products/helpers/format-price';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const {
     items: products,
@@ -32,6 +33,15 @@ const productToDelete = ref<Product | null>(null);
 const deleting = ref(false);
 
 const pageTitle = computed(() => t('admin.list.page_title'));
+
+function productName(product: Product): string {
+    return pickLocalized(product.name, product.name_en, locale.value);
+}
+
+function categoryName(product: Product): string {
+    if (!product.category) return '—';
+    return pickLocalized(product.category.name, product.category.name_en, locale.value);
+}
 
 onMounted(() => fetchList({ page: currentPage.value }));
 
@@ -162,17 +172,25 @@ async function confirmDelete(): Promise<void> {
                     >
                         <td class="px-5 py-3.5">
                             <div class="flex items-center gap-3">
+                                <img
+                                    v-if="product.image_url"
+                                    :src="product.image_url"
+                                    :alt="productName(product)"
+                                    loading="lazy"
+                                    class="h-10 w-10 flex-shrink-0 rounded-lg object-cover shadow-soft"
+                                />
                                 <span
-                                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-sm font-bold text-white shadow-soft"
+                                    v-else
+                                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-brand-gradient text-sm font-bold text-white shadow-soft"
                                 >
-                                    {{ product.name.charAt(0).toUpperCase() }}
+                                    {{ productName(product).charAt(0).toUpperCase() }}
                                 </span>
                                 <div class="min-w-0">
                                     <Link
                                         :href="`/product/${product.id}`"
                                         class="block truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-700"
                                     >
-                                        {{ product.name }}
+                                        {{ productName(product) }}
                                     </Link>
                                     <p class="truncate text-xs text-slate-500">
                                         #{{ product.id }}
@@ -182,7 +200,7 @@ async function confirmDelete(): Promise<void> {
                         </td>
                         <td class="px-5 py-3.5">
                             <span class="chip">
-                                {{ product.category?.name ?? '—' }}
+                                {{ categoryName(product) }}
                             </span>
                         </td>
                         <td

@@ -3,8 +3,11 @@ import type { Category } from '@/modules/categories';
 export interface Product {
     id: number;
     name: string;
+    name_en: string | null;
     description: string | null;
+    description_en: string | null;
     price: number;
+    image_url: string | null;
     category_id: number;
     category?: Category;
     created_at: string;
@@ -13,8 +16,11 @@ export interface Product {
 
 export interface ProductPayload {
     name: string;
+    name_en?: string | null;
     description: string | null;
+    description_en?: string | null;
     price: number;
+    image_url?: string | null;
     category_id: number;
 }
 

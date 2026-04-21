@@ -13,7 +13,7 @@ const props = defineProps<{
     id?: number;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const isEdit = computed(() => typeof props.id === 'number');
 const kicker = computed(() =>
@@ -29,16 +29,37 @@ const subtitle = computed(() =>
 const { items: categories, fetchAll: fetchCategories } = useCategories();
 const { loading: saving, fetchOne, create, update } = useProductsApi();
 
-const form = reactive<ProductPayload>({
+interface FormState {
+    name: string;
+    name_en: string;
+    description: string;
+    description_en: string;
+    price: number;
+    image_url: string;
+    category_id: number;
+}
+
+const form = reactive<FormState>({
     name: '',
+    name_en: '',
     description: '',
+    description_en: '',
     price: 0,
+    image_url: '',
     category_id: 0,
 });
 
 const fieldErrors = ref<Record<string, string[]>>({});
 const generalError = ref<string | null>(null);
 const loadingExisting = ref(false);
+
+const previewFailed = ref(false);
+const imagePreviewUrl = computed(() => {
+    const trimmed = form.image_url.trim();
+    if (!trimmed) return null;
+    if (!/^https?:\/\//i.test(trimmed)) return null;
+    return trimmed;
+});
 
 onMounted(async () => {
     fetchCategories();
@@ -48,8 +69,11 @@ onMounted(async () => {
         try {
             const product = await fetchOne(props.id);
             form.name = product.name;
+            form.name_en = product.name_en ?? '';
             form.description = product.description ?? '';
+            form.description_en = product.description_en ?? '';
             form.price = Number(product.price);
+            form.image_url = product.image_url ?? '';
             form.category_id = product.category_id;
         } catch (err) {
             generalError.value = extractApiError(err, t('admin.form.load_failed'));
@@ -59,22 +83,27 @@ onMounted(async () => {
     }
 });
 
+function buildPayload(): ProductPayload {
+    return {
+        name: form.name.trim(),
+        name_en: form.name_en.trim() || null,
+        description: form.description.trim() || null,
+        description_en: form.description_en.trim() || null,
+        price: Number(form.price),
+        image_url: form.image_url.trim() || null,
+        category_id: Number(form.category_id),
+    };
+}
+
 async function submit(): Promise<void> {
     fieldErrors.value = {};
     generalError.value = null;
 
-    const payload: ProductPayload = {
-        name: form.name.trim(),
-        description: form.description?.toString().trim() || null,
-        price: Number(form.price),
-        category_id: Number(form.category_id),
-    };
-
     try {
         if (isEdit.value && props.id) {
-            await update(props.id, payload);
+            await update(props.id, buildPayload());
         } else {
-            await create(payload);
+            await create(buildPayload());
         }
         router.visit('/admin/products');
     } catch (err) {
@@ -136,25 +165,48 @@ async function submit(): Promise<void> {
                 </header>
 
                 <div class="space-y-5">
-                    <div>
-                        <label for="name" class="text-xs font-semibold text-slate-700">
-                            {{ t('admin.form.field_name') }}
-                        </label>
-                        <input
-                            id="name"
-                            v-model="form.name"
-                            type="text"
-                            required
-                            maxlength="255"
-                            autofocus
-                            :placeholder="t('admin.form.field_name_placeholder')"
-                            class="field mt-1.5"
-                        />
-                        <p v-if="fieldErrors.name?.[0]" class="mt-1.5 text-xs text-rose-600">
-                            {{ fieldErrors.name[0] }}
-                        </p>
+                    <!-- Name — bilingual -->
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="name" class="text-xs font-semibold text-slate-700">
+                                {{ t('admin.form.field_name_ru') }}
+                            </label>
+                            <input
+                                id="name"
+                                v-model="form.name"
+                                type="text"
+                                required
+                                maxlength="255"
+                                autofocus
+                                :placeholder="t('admin.form.field_name_placeholder_ru')"
+                                class="field mt-1.5"
+                            />
+                            <p v-if="fieldErrors.name?.[0]" class="mt-1.5 text-xs text-rose-600">
+                                {{ fieldErrors.name[0] }}
+                            </p>
+                        </div>
+                        <div>
+                            <label for="name_en" class="text-xs font-semibold text-slate-700">
+                                {{ t('admin.form.field_name_en') }}
+                                <span class="font-normal text-slate-400">
+                                    {{ t('admin.form.field_description_optional') }}
+                                </span>
+                            </label>
+                            <input
+                                id="name_en"
+                                v-model="form.name_en"
+                                type="text"
+                                maxlength="255"
+                                :placeholder="t('admin.form.field_name_placeholder_en')"
+                                class="field mt-1.5"
+                            />
+                            <p v-if="fieldErrors.name_en?.[0]" class="mt-1.5 text-xs text-rose-600">
+                                {{ fieldErrors.name_en[0] }}
+                            </p>
+                        </div>
                     </div>
 
+                    <!-- Category -->
                     <div>
                         <label for="category_id" class="text-xs font-semibold text-slate-700">
                             {{ t('admin.form.field_category') }}
@@ -174,7 +226,11 @@ async function submit(): Promise<void> {
                                     :key="category.id"
                                     :value="category.id"
                                 >
-                                    {{ category.name }}
+                                    {{
+                                        locale === 'en' && category.name_en
+                                            ? category.name_en
+                                            : category.name
+                                    }}
                                 </option>
                             </select>
                             <svg
@@ -197,26 +253,104 @@ async function submit(): Promise<void> {
                         </p>
                     </div>
 
-                    <div>
-                        <label for="description" class="text-xs font-semibold text-slate-700">
-                            {{ t('admin.form.field_description') }}
+                    <!-- Description — bilingual -->
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label
+                                for="description"
+                                class="text-xs font-semibold text-slate-700"
+                            >
+                                {{ t('admin.form.field_description_ru') }}
+                                <span class="font-normal text-slate-400">
+                                    {{ t('admin.form.field_description_optional') }}
+                                </span>
+                            </label>
+                            <textarea
+                                id="description"
+                                v-model="form.description"
+                                rows="5"
+                                :placeholder="t('admin.form.field_description_placeholder_ru')"
+                                class="field mt-1.5 resize-y"
+                            ></textarea>
+                            <p
+                                v-if="fieldErrors.description?.[0]"
+                                class="mt-1.5 text-xs text-rose-600"
+                            >
+                                {{ fieldErrors.description[0] }}
+                            </p>
+                        </div>
+                        <div>
+                            <label
+                                for="description_en"
+                                class="text-xs font-semibold text-slate-700"
+                            >
+                                {{ t('admin.form.field_description_en') }}
+                                <span class="font-normal text-slate-400">
+                                    {{ t('admin.form.field_description_optional') }}
+                                </span>
+                            </label>
+                            <textarea
+                                id="description_en"
+                                v-model="form.description_en"
+                                rows="5"
+                                :placeholder="t('admin.form.field_description_placeholder_en')"
+                                class="field mt-1.5 resize-y"
+                            ></textarea>
+                            <p
+                                v-if="fieldErrors.description_en?.[0]"
+                                class="mt-1.5 text-xs text-rose-600"
+                            >
+                                {{ fieldErrors.description_en[0] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Media -->
+            <section class="card p-6">
+                <header class="mb-5">
+                    <h2 class="text-sm font-semibold text-slate-900">
+                        {{ t('admin.form.section_media_title') }}
+                    </h2>
+                    <p class="text-xs text-slate-500">
+                        {{ t('admin.form.section_media_subtitle') }}
+                    </p>
+                </header>
+
+                <div class="flex flex-col gap-4 sm:flex-row">
+                    <div class="flex-1">
+                        <label for="image_url" class="text-xs font-semibold text-slate-700">
+                            {{ t('admin.form.field_image_url') }}
                             <span class="font-normal text-slate-400">
-                                {{ t('admin.form.field_description_optional') }}
+                                {{ t('admin.form.field_image_url_optional') }}
                             </span>
                         </label>
-                        <textarea
-                            id="description"
-                            v-model="form.description"
-                            rows="5"
-                            :placeholder="t('admin.form.field_description_placeholder')"
-                            class="field mt-1.5 resize-y"
-                        ></textarea>
+                        <input
+                            id="image_url"
+                            v-model="form.image_url"
+                            type="url"
+                            maxlength="500"
+                            :placeholder="t('admin.form.field_image_url_placeholder')"
+                            class="field mt-1.5 font-mono text-xs"
+                            @input="previewFailed = false"
+                        />
                         <p
-                            v-if="fieldErrors.description?.[0]"
+                            v-if="fieldErrors.image_url?.[0]"
                             class="mt-1.5 text-xs text-rose-600"
                         >
-                            {{ fieldErrors.description[0] }}
+                            {{ fieldErrors.image_url[0] }}
                         </p>
+                    </div>
+                    <div class="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                        <img
+                            v-if="imagePreviewUrl && !previewFailed"
+                            :src="imagePreviewUrl"
+                            alt=""
+                            class="h-full w-full object-cover"
+                            @error="previewFailed = true"
+                        />
+                        <span v-else class="text-[10px] text-slate-400">preview</span>
                     </div>
                 </div>
             </section>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { pickLocalized } from '@/common/helpers';
 import type { Product } from '../models';
 import { formatPrice } from '../helpers/format-price';
 
@@ -9,8 +10,24 @@ const props = defineProps<{
     product: Product;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
+const name = computed(() => pickLocalized(props.product.name, props.product.name_en, locale.value));
+const description = computed(() =>
+    pickLocalized(props.product.description, props.product.description_en, locale.value),
+);
+const categoryName = computed(() =>
+    props.product.category
+        ? pickLocalized(
+              props.product.category.name,
+              props.product.category.name_en,
+              locale.value,
+          )
+        : null,
+);
+
+// Deterministic gradient used as a stylized placeholder whenever the image
+// URL is missing or fails to load.
 const gradient = computed(() => {
     const palettes = [
         'from-indigo-500/90 via-violet-500/80 to-fuchsia-500/70',
@@ -23,7 +40,10 @@ const gradient = computed(() => {
     return palettes[props.product.id % palettes.length];
 });
 
-const initial = computed(() => props.product.name.charAt(0).toUpperCase());
+const initial = computed(() => name.value.charAt(0).toUpperCase() || '?');
+
+const imageFailed = ref(false);
+const showImage = computed(() => !!props.product.image_url && !imageFailed.value);
 </script>
 
 <template>
@@ -33,23 +53,33 @@ const initial = computed(() => props.product.name.charAt(0).toUpperCase());
     >
         <div
             :class="[
-                'relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br overflow-hidden',
-                gradient,
+                'relative aspect-[4/3] overflow-hidden',
+                showImage ? 'bg-slate-100' : `bg-gradient-to-br ${gradient}`,
             ]"
         >
-            <div
-                class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_55%)]"
+            <img
+                v-if="showImage"
+                :src="product.image_url ?? ''"
+                :alt="name"
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                @error="imageFailed = true"
             />
+            <template v-else>
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_55%)]"
+                />
+                <span
+                    class="flex h-full w-full items-center justify-center font-display text-6xl font-bold tracking-tightest text-white/90 drop-shadow-sm"
+                >
+                    {{ initial }}
+                </span>
+            </template>
             <span
-                class="font-display text-6xl font-bold tracking-tightest text-white/90 drop-shadow-sm"
-            >
-                {{ initial }}
-            </span>
-            <span
-                v-if="product.category"
+                v-if="categoryName"
                 class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-700 backdrop-blur"
             >
-                {{ product.category.name }}
+                {{ categoryName }}
             </span>
         </div>
 
@@ -57,10 +87,10 @@ const initial = computed(() => props.product.name.charAt(0).toUpperCase());
             <h3
                 class="line-clamp-2 text-base font-semibold text-slate-900 transition group-hover:text-brand-700"
             >
-                {{ product.name }}
+                {{ name }}
             </h3>
-            <p v-if="product.description" class="line-clamp-2 text-sm text-slate-500">
-                {{ product.description }}
+            <p v-if="description" class="line-clamp-2 text-sm text-slate-500">
+                {{ description }}
             </p>
             <div class="mt-auto flex items-end justify-between pt-2">
                 <span class="font-display text-xl font-bold tracking-tight text-slate-900">

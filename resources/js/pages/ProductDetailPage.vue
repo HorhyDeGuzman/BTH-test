@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/vue/20/solid';
 import { useI18n } from 'vue-i18n';
 import PublicLayout from '@/common/layouts/public-layout.vue';
+import { pickLocalized } from '@/common/helpers';
 import { useProductsApi } from '@/modules/products';
 import { formatPrice } from '@/modules/products/helpers/format-price';
 
@@ -22,6 +23,24 @@ function goBack(): void {
     }
 }
 
+const name = computed(() =>
+    product.value ? pickLocalized(product.value.name, product.value.name_en, locale.value) : '',
+);
+const description = computed(() =>
+    product.value
+        ? pickLocalized(product.value.description, product.value.description_en, locale.value)
+        : '',
+);
+const categoryName = computed(() =>
+    product.value?.category
+        ? pickLocalized(
+              product.value.category.name,
+              product.value.category.name_en,
+              locale.value,
+          )
+        : null,
+);
+
 const gradient = computed(() => {
     const palettes = [
         'from-indigo-500 via-violet-500 to-fuchsia-500',
@@ -34,21 +53,20 @@ const gradient = computed(() => {
     return palettes[Number(props.id) % palettes.length];
 });
 
-const initial = computed(() => product.value?.name.charAt(0).toUpperCase() ?? '?');
+const initial = computed(() => name.value.charAt(0).toUpperCase() || '?');
+
+const imageFailed = ref(false);
+const showImage = computed(() => !!product.value?.image_url && !imageFailed.value);
 
 const createdDate = computed(() => {
     if (!product.value?.created_at) return null;
     return new Date(product.value.created_at).toLocaleDateString(
         locale.value === 'ru' ? 'ru-RU' : 'en-US',
-        {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        },
+        { year: 'numeric', month: 'short', day: 'numeric' },
     );
 });
 
-const pageTitle = computed(() => product.value?.name ?? t('public.detail.page_title_fallback'));
+const pageTitle = computed(() => name.value || t('public.detail.page_title_fallback'));
 
 onMounted(() => {
     fetchOne(Number(props.id)).catch(() => {
@@ -68,7 +86,7 @@ onMounted(() => {
                 </Link>
                 <span class="text-slate-300">/</span>
                 <span class="truncate text-slate-900">
-                    {{ product?.name ?? t('public.detail.product_fallback') }}
+                    {{ name || t('public.detail.product_fallback') }}
                 </span>
             </nav>
 
@@ -113,30 +131,39 @@ onMounted(() => {
                 <div class="lg:col-span-2">
                     <div
                         :class="[
-                            'relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br shadow-lift',
-                            gradient,
+                            'relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl shadow-lift',
+                            showImage ? 'bg-slate-100' : `bg-gradient-to-br ${gradient}`,
                         ]"
                     >
-                        <div
-                            class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_55%)]"
+                        <img
+                            v-if="showImage"
+                            :src="product.image_url ?? ''"
+                            :alt="name"
+                            class="h-full w-full object-cover"
+                            @error="imageFailed = true"
                         />
-                        <span
-                            class="font-display text-[10rem] font-bold leading-none tracking-tightest text-white/90 drop-shadow"
-                        >
-                            {{ initial }}
-                        </span>
+                        <template v-else>
+                            <div
+                                class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_55%)]"
+                            />
+                            <span
+                                class="font-display text-[10rem] font-bold leading-none tracking-tightest text-white/90 drop-shadow"
+                            >
+                                {{ initial }}
+                            </span>
+                        </template>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-6 lg:col-span-3">
                     <div>
-                        <span v-if="product.category" class="chip-brand">
-                            {{ product.category.name }}
+                        <span v-if="categoryName" class="chip-brand">
+                            {{ categoryName }}
                         </span>
                         <h1
                             class="mt-4 font-display text-3xl font-bold tracking-tightest text-slate-900 sm:text-4xl"
                         >
-                            {{ product.name }}
+                            {{ name }}
                         </h1>
                     </div>
 
@@ -156,10 +183,10 @@ onMounted(() => {
                             {{ t('public.detail.description') }}
                         </h2>
                         <p
-                            v-if="product.description"
+                            v-if="description"
                             class="mt-3 whitespace-pre-line text-base leading-relaxed text-slate-700"
                         >
-                            {{ product.description }}
+                            {{ description }}
                         </p>
                         <p v-else class="mt-3 italic text-slate-400">
                             {{ t('public.detail.no_description') }}

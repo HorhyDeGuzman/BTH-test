@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 import { useI18n } from 'vue-i18n';
+import { pickLocalized } from '@/common/helpers';
 import Modal from '@/common/components/modal.vue';
 import type { Product } from '../models';
 
@@ -16,12 +17,16 @@ const emit = defineEmits<{
     (e: 'confirm'): void;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+const displayName = computed(() =>
+    props.product
+        ? pickLocalized(props.product.name, props.product.name_en, locale.value)
+        : t('admin.delete_modal.product_fallback'),
+);
 
 const confirmMessage = computed(() =>
-    t('admin.delete_modal.confirm', {
-        name: props.product?.name ?? t('admin.delete_modal.product_fallback'),
-    }),
+    t('admin.delete_modal.confirm', { name: displayName.value }),
 );
 </script>
 

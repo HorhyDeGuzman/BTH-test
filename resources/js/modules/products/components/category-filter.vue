@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { pickLocalized } from '@/common/helpers';
 import type { Category } from '@/modules/categories';
 
 const props = defineProps<{
@@ -13,12 +14,16 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const selected = computed({
     get: () => props.modelValue,
     set: (value: number | null) => emit('update:modelValue', value),
 });
+
+function displayName(category: Category): string {
+    return pickLocalized(category.name, category.name_en, locale.value);
+}
 </script>
 
 <template>
@@ -31,7 +36,7 @@ const selected = computed({
         >
             <option :value="null">{{ t('public.filter.all_categories') }}</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
-                {{ category.name }}
+                {{ displayName(category) }}
             </option>
         </select>
         <svg
