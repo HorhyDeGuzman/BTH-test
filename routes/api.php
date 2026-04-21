@@ -25,4 +25,10 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('api
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
     Route::get('/me', [AuthController::class, 'me'])->name('api.me');
+
+    Route::post('/products', [ProductController::class, 'store'])->name('api.products.store');
+    Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update'])
+        ->name('api.products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+        ->name('api.products.destroy');
 });
