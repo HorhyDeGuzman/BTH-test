@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted, ref, watch } from 'vue';
+import {
+    CubeIcon,
+    ExclamationCircleIcon,
+    PencilSquareIcon,
+    PlusIcon,
+    TrashIcon,
+} from '@heroicons/vue/24/outline';
 import AdminLayout from '@/common/layouts/admin-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
 import { useProductsApi } from '@/modules/products';
@@ -40,7 +47,6 @@ async function confirmDelete(): Promise<void> {
     try {
         await remove(productToDelete.value.id);
         productToDelete.value = null;
-        // Step back a page if we removed the last item on page > 1.
         if (products.value.length === 0 && currentPage.value > 1) {
             currentPage.value -= 1;
         } else {
@@ -53,86 +59,159 @@ async function confirmDelete(): Promise<void> {
 </script>
 
 <template>
-    <Head title="Manage products" />
+    <Head title="Products · Admin" />
 
     <AdminLayout>
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-gray-900">Products</h1>
-            <Link
-                href="/admin/products/create"
-                class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
-            >
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    Admin
+                </p>
+                <h1 class="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900">
+                    Products
+                </h1>
+                <p v-if="meta" class="mt-1 text-sm text-slate-500">
+                    <span class="font-semibold text-slate-700">{{ meta.total }}</span>
+                    products in catalog
+                </p>
+            </div>
+            <Link href="/admin/products/create" class="btn-primary">
+                <PlusIcon class="h-4 w-4" />
                 Add product
             </Link>
         </div>
 
         <div
             v-if="error"
-            class="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            class="mb-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700"
         >
-            {{ error }}
+            <ExclamationCircleIcon class="mt-0.5 h-5 w-5 flex-shrink-0" />
+            <span>{{ error }}</span>
         </div>
 
-        <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+        <div class="card overflow-hidden">
+            <table class="min-w-full divide-y divide-slate-100">
+                <thead class="bg-slate-50/70">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                            Name
+                        <th
+                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                        >
+                            Product
                         </th>
-                        <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                        <th
+                            class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                        >
                             Category
                         </th>
-                        <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
+                        <th
+                            class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500"
+                        >
                             Price
                         </th>
-                        <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
-                            Actions
-                        </th>
+                        <th class="px-5 py-3"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    <tr v-if="loading && products.length === 0">
-                        <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">
-                            Loading…
-                        </td>
-                    </tr>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <!-- Skeleton rows -->
+                    <template v-if="loading && products.length === 0">
+                        <tr v-for="i in 6" :key="`s-${i}`">
+                            <td class="px-5 py-4">
+                                <div class="skeleton h-4 w-40"></div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="skeleton h-4 w-20"></div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="skeleton ml-auto h-4 w-16"></div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="skeleton ml-auto h-4 w-12"></div>
+                            </td>
+                        </tr>
+                    </template>
+
                     <tr v-else-if="products.length === 0">
-                        <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">
-                            No products yet.
+                        <td colspan="4" class="px-5 py-16">
+                            <div class="mx-auto flex max-w-sm flex-col items-center text-center">
+                                <div
+                                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400"
+                                >
+                                    <CubeIcon class="h-6 w-6" />
+                                </div>
+                                <h3 class="mt-4 text-base font-semibold text-slate-900">
+                                    No products yet
+                                </h3>
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Get started by adding your first product to the catalog.
+                                </p>
+                                <Link href="/admin/products/create" class="btn-primary mt-6">
+                                    <PlusIcon class="h-4 w-4" />
+                                    Add product
+                                </Link>
+                            </div>
                         </td>
                     </tr>
-                    <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900">
-                            {{ product.name }}
+
+                    <tr
+                        v-for="product in products"
+                        :key="product.id"
+                        class="group transition hover:bg-slate-50/60"
+                    >
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-sm font-bold text-white shadow-soft"
+                                >
+                                    {{ product.name.charAt(0).toUpperCase() }}
+                                </span>
+                                <div class="min-w-0">
+                                    <Link
+                                        :href="`/product/${product.id}`"
+                                        class="block truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-700"
+                                    >
+                                        {{ product.name }}
+                                    </Link>
+                                    <p class="truncate text-xs text-slate-500">
+                                        #{{ product.id }}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            {{ product.category?.name ?? '—' }}
+                        <td class="px-5 py-3.5">
+                            <span class="chip">
+                                {{ product.category?.name ?? '—' }}
+                            </span>
                         </td>
-                        <td class="px-4 py-3 text-right text-sm text-gray-900">
+                        <td
+                            class="px-5 py-3.5 text-right font-mono text-sm font-semibold text-slate-900"
+                        >
                             {{ formatPrice(product.price) }}
                         </td>
-                        <td class="px-4 py-3 text-right text-sm">
-                            <Link
-                                :href="`/admin/products/${product.id}/edit`"
-                                class="mr-3 text-indigo-600 hover:text-indigo-500"
-                            >
-                                Edit
-                            </Link>
-                            <button
-                                type="button"
-                                class="text-red-600 hover:text-red-500"
-                                @click="askDelete(product)"
-                            >
-                                Delete
-                            </button>
+                        <td class="px-5 py-3.5">
+                            <div class="flex justify-end gap-1">
+                                <Link
+                                    :href="`/admin/products/${product.id}/edit`"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                                    title="Edit"
+                                >
+                                    <PencilSquareIcon class="h-4 w-4" />
+                                </Link>
+                                <button
+                                    type="button"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                    title="Delete"
+                                    @click="askDelete(product)"
+                                >
+                                    <TrashIcon class="h-4 w-4" />
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <div v-if="meta && meta.last_page > 1" class="mt-6">
+        <div v-if="meta && meta.last_page > 1" class="mt-8 flex justify-center">
             <Pagination
                 v-model:current-page="currentPage"
                 :last-page="meta.last_page"

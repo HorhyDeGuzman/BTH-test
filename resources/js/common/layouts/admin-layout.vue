@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
+import { ArrowRightOnRectangleIcon, CubeIcon } from '@heroicons/vue/24/outline';
 import { useAuth } from '@/modules/auth';
 
 const { user, isAuthenticated, logout } = useAuth();
 
-// Client-side auth guard: if there's no token in localStorage, kick the
-// visitor back to the public login screen. A real app would pair this with
-// a server check on admin pages, but per the task spec the source of truth
-// for "is authenticated" is the localStorage token.
 onMounted(() => {
     if (!isAuthenticated.value) {
         router.visit('/login', { replace: true });
@@ -19,40 +16,76 @@ async function handleLogout(): Promise<void> {
     await logout();
     router.visit('/login');
 }
+
+const initials = (name?: string) =>
+    (name ?? '?')
+        .split(' ')
+        .map((p) => p[0]?.toUpperCase())
+        .slice(0, 2)
+        .join('');
 </script>
 
 <template>
-    <div v-if="isAuthenticated" class="min-h-screen bg-gray-50 text-gray-900">
-        <header class="border-b border-gray-200 bg-white">
-            <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-                <Link
-                    href="/admin/products"
-                    class="text-xl font-semibold text-gray-900 hover:text-indigo-600"
-                >
-                    BTH Admin
-                </Link>
-                <nav class="flex items-center gap-4 text-sm">
-                    <Link
-                        href="/admin/products"
-                        class="rounded-md px-3 py-1.5 text-gray-600 hover:text-indigo-600"
-                    >
-                        Manage products
+    <div
+        v-if="isAuthenticated"
+        class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased"
+    >
+        <header
+            class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl"
+        >
+            <div class="container flex h-16 items-center justify-between">
+                <div class="flex items-center gap-6">
+                    <Link href="/admin/products" class="flex items-center gap-2.5">
+                        <span
+                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white shadow-soft"
+                        >
+                            B
+                        </span>
+                        <div class="flex items-baseline gap-1.5">
+                            <span class="font-semibold tracking-tight text-slate-900">BTH</span>
+                            <span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                                Admin
+                            </span>
+                        </div>
                     </Link>
-                    <span v-if="user" class="text-xs text-gray-500">
-                        {{ user.email }}
-                    </span>
-                    <button
-                        type="button"
-                        class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-gray-700 hover:bg-gray-50"
-                        @click="handleLogout"
+
+                    <nav class="hidden items-center gap-1 sm:flex">
+                        <Link
+                            href="/admin/products"
+                            class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                        >
+                            <CubeIcon class="h-4 w-4 text-slate-500" />
+                            Products
+                        </Link>
+                    </nav>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <Link
+                        href="/"
+                        class="hidden text-xs font-medium text-slate-500 transition hover:text-slate-900 sm:inline"
                     >
-                        Log out
+                        View public catalog →
+                    </Link>
+                    <div class="hidden items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3 sm:flex">
+                        <span
+                            class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white"
+                        >
+                            {{ initials(user?.name) }}
+                        </span>
+                        <span class="text-xs font-medium text-slate-700">
+                            {{ user?.email ?? '' }}
+                        </span>
+                    </div>
+                    <button type="button" class="btn-secondary" @click="handleLogout">
+                        <ArrowRightOnRectangleIcon class="h-4 w-4" />
+                        <span class="hidden sm:inline">Log out</span>
                     </button>
-                </nav>
+                </div>
             </div>
         </header>
 
-        <main class="mx-auto max-w-6xl px-4 py-8">
+        <main class="container py-10 animate-fade-in">
             <slot />
         </main>
     </div>
