@@ -7,6 +7,12 @@
         "ru": "RU",
         "en": "EN"
     },
+    "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "system": "System",
+        "dark": "Dark"
+    },
     "public": {
         "layout": {
             "brand": "BTH",
