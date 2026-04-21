@@ -19,8 +19,11 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'name_en' => $this->name_en,
             'description' => $this->description,
+            'description_en' => $this->description_en,
             'price' => (float) $this->price,
+            'image_url' => $this->image_url,
             'category_id' => $this->category_id,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'created_at' => $this->created_at?->toIso8601String(),
