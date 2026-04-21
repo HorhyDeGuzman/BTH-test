@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,6 +15,14 @@ Route::get('/product/{id}', fn (int $id) => Inertia::render('ProductDetailPage',
 ]))
     ->whereNumber('id')
     ->name('products.show');
+
+/*
+|--------------------------------------------------------------------------
+| Admin login page (Inertia shell — the form itself calls POST /api/login
+| and stores the returned Sanctum token in localStorage).
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', fn () => Inertia::render('auth/LoginPage'))->name('login');
 
 /*
 |--------------------------------------------------------------------------
@@ -37,18 +44,3 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->whereNumber('id')
         ->name('products.edit');
 });
-
-/*
-|--------------------------------------------------------------------------
-| Authenticated (session) routes kept from Breeze scaffold for now.
-| The product-admin flow runs on the REST API (Sanctum tokens), not on
-| session auth — those routes are added in a later commit.
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
