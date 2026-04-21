@@ -12,6 +12,7 @@
             "brand": "BTH",
             "catalog": "Каталог",
             "admin": "Админ",
+            "admin_panel": "Админ-панель",
             "copyright": "© {year} BTH Catalog",
             "built_with": "Сделано на Laravel · Vue 3 · Inertia · Tailwind"
         },

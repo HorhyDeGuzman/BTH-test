@@ -3,8 +3,11 @@ import { Link } from '@inertiajs/vue3';
 import { ArrowRightIcon } from '@heroicons/vue/20/solid';
 import { useI18n } from 'vue-i18n';
 import LocaleSwitcher from '@/common/components/locale-switcher.vue';
+import { useAuth } from '@/modules/auth';
 
 const { t } = useI18n();
+const { isAuthenticated } = useAuth();
+
 const year = new Date().getFullYear();
 </script>
 
@@ -32,8 +35,21 @@ const year = new Date().getFullYear();
 
                 <nav class="flex items-center gap-2">
                     <LocaleSwitcher />
-                    <Link href="/login" class="btn-ghost">
-                        <span>{{ t('public.layout.admin') }}</span>
+                    <!--
+                        If the admin is already signed in, send them straight
+                        to the dashboard — no flash of the login page.
+                    -->
+                    <Link
+                        :href="isAuthenticated ? '/admin/products' : '/login'"
+                        class="btn-ghost"
+                    >
+                        <span>
+                            {{
+                                isAuthenticated
+                                    ? t('public.layout.admin_panel')
+                                    : t('public.layout.admin')
+                            }}
+                        </span>
                         <ArrowRightIcon class="h-4 w-4" />
                     </Link>
                 </nav>

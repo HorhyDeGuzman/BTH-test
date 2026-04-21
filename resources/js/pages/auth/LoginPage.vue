@@ -10,6 +10,11 @@ import { useAuth } from '@/modules/auth';
 const { t } = useI18n();
 const { isAuthenticated, login, loading } = useAuth();
 
+// Captured synchronously before the template renders, so authenticated
+// visitors never see the login UI — we show a neutral loading screen
+// while the redirect completes.
+const wasAuthenticatedOnMount = isAuthenticated.value;
+
 const form = reactive({
     email: '',
     password: '',
@@ -22,7 +27,7 @@ const pageTitle = computed(() => t('auth.login.page_title'));
 const year = new Date().getFullYear();
 
 onMounted(() => {
-    if (isAuthenticated.value) {
+    if (wasAuthenticatedOnMount) {
         router.visit('/admin/products', { replace: true });
     }
 });
@@ -49,7 +54,29 @@ async function submit(): Promise<void> {
 <template>
     <Head :title="pageTitle" />
 
-    <div class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
+    <!-- Silent loading screen while we redirect an already-authenticated admin -->
+    <div
+        v-if="wasAuthenticatedOnMount"
+        class="flex min-h-screen items-center justify-center bg-slate-50 text-slate-400"
+    >
+        <svg class="h-6 w-6 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="3"
+            />
+            <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"
+            />
+        </svg>
+    </div>
+
+    <div v-else class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
         <div class="grid min-h-screen lg:grid-cols-2">
             <aside
                 class="relative hidden overflow-hidden bg-slate-950 text-white lg:flex lg:flex-col lg:justify-between lg:p-12"

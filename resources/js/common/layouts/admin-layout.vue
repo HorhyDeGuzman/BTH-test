@@ -9,8 +9,12 @@ import { useAuth } from '@/modules/auth';
 const { t } = useI18n();
 const { user, isAuthenticated, logout } = useAuth();
 
+// Captured synchronously: if there's no token at mount time we don't even
+// render the admin chrome, we show a neutral loader while bouncing to /login.
+const wasAuthenticatedOnMount = isAuthenticated.value;
+
 onMounted(() => {
-    if (!isAuthenticated.value) {
+    if (!wasAuthenticatedOnMount) {
         router.visit('/login', { replace: true });
     }
 });
@@ -29,8 +33,30 @@ const initials = (name?: string) =>
 </script>
 
 <template>
+    <!-- Silent loader while we bounce an unauthenticated visitor to /login -->
     <div
-        v-if="isAuthenticated"
+        v-if="!wasAuthenticatedOnMount"
+        class="flex min-h-screen items-center justify-center bg-slate-50 text-slate-400"
+    >
+        <svg class="h-6 w-6 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="3"
+            />
+            <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"
+            />
+        </svg>
+    </div>
+
+    <div
+        v-else
         class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased"
     >
         <header
