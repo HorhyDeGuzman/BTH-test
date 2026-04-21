@@ -107,18 +107,18 @@ async function submit(): Promise<void> {
                 <div class="mx-auto w-full max-w-sm animate-fade-in">
                     <Link
                         href="/"
-                        class="mb-8 inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900"
+                        class="mb-10 flex w-fit items-center gap-1 text-sm text-slate-500 transition hover:text-slate-900"
                     >
                         <ArrowLeftIcon class="h-4 w-4" />
                         Back to catalog
                     </Link>
 
                     <div
-                        class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white"
                     >
                         <LockClosedIcon class="h-5 w-5" />
                     </div>
-                    <h2 class="font-display text-2xl font-bold tracking-tight text-slate-900">
+                    <h2 class="mt-4 font-display text-2xl font-bold tracking-tight text-slate-900">
                         Welcome back
                     </h2>
                     <p class="mt-1 text-sm text-slate-500">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted } from 'vue';
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/vue/20/solid';
 import PublicLayout from '@/common/layouts/public-layout.vue';
@@ -9,6 +9,17 @@ import { formatPrice } from '@/modules/products/helpers/format-price';
 const props = defineProps<{
     id: number;
 }>();
+
+// Return to whichever page brought the viewer here (public catalog or the
+// admin list). Falls back to the public catalog when there's no history
+// (e.g. the user opened the detail page in a fresh tab).
+function goBack(): void {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+        window.history.back();
+    } else {
+        router.visit('/');
+    }
+}
 
 const { current: product, loading, error, fetchOne } = useProductsApi();
 
@@ -86,10 +97,10 @@ onMounted(() => {
                 <p class="mt-1 text-sm text-rose-700">
                     The product may have been removed or the link is invalid.
                 </p>
-                <Link href="/" class="btn-secondary mt-6">
+                <button type="button" class="btn-secondary mt-6" @click="goBack">
                     <ArrowLeftIcon class="h-4 w-4" />
-                    Back to catalog
-                </Link>
+                    Go back
+                </button>
             </div>
 
             <!-- Detail -->
@@ -168,10 +179,10 @@ onMounted(() => {
                         </div>
                     </dl>
 
-                    <Link href="/" class="btn-ghost self-start">
+                    <button type="button" class="btn-ghost self-start" @click="goBack">
                         <ArrowLeftIcon class="h-4 w-4" />
-                        Back to catalog
-                    </Link>
+                        Go back
+                    </button>
                 </div>
             </article>
         </div>

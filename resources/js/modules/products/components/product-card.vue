@@ -28,7 +28,7 @@ const initial = computed(() => props.product.name.charAt(0).toUpperCase());
 <template>
     <Link
         :href="`/product/${product.id}`"
-        class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lift"
+        class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition-colors duration-150 hover:border-slate-300 hover:shadow-lift"
     >
         <!-- Visual placeholder (no images in DB yet) -->
         <div
