@@ -9,6 +9,7 @@ export const productsApi = {
                 page: params.page,
                 per_page: params.per_page,
                 category_id: params.category_id ?? undefined,
+                search: params.search?.trim() || undefined,
             },
         });
         return data;

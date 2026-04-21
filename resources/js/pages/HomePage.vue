@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { onMounted, ref, watch } from 'vue';
 import PublicLayout from '@/common/layouts/public-layout.vue';
 import Pagination from '@/common/components/pagination.vue';
+import { useDebouncedRef } from '@/common/composables';
 import { useProductsApi } from '@/modules/products';
 import { useCategories } from '@/modules/categories';
 import ProductCard from '@/modules/products/components/product-card.vue';
@@ -21,21 +22,29 @@ const { items: categories, fetchAll: fetchCategories } = useCategories();
 const selectedCategoryId = ref<number | null>(null);
 const currentPage = ref(1);
 
+// Raw input model (immediate) and the debounced value that drives the API.
+// Using two refs lets the input stay responsive while API calls are throttled.
+const searchInput = ref('');
+const debouncedSearch = useDebouncedRef('', 400);
+
+watch(searchInput, (value) => {
+    debouncedSearch.value = value;
+});
+
 onMounted(() => {
     fetchCategories();
     fetchList({ page: currentPage.value });
 });
 
-// Refetch whenever the filter or page changes. The category filter and
-// pagination are independent inputs; watching both in one watcher keeps the
-// behaviour simple: any change re-issues a request with the latest state.
-watch([selectedCategoryId, currentPage], ([categoryId, page]) => {
-    fetchList({ category_id: categoryId, page });
+// Single watcher for every input: any change re-issues a request with the
+// latest filter + page + search state.
+watch([selectedCategoryId, currentPage, debouncedSearch], ([categoryId, page, search]) => {
+    fetchList({ category_id: categoryId, page, search });
 });
 
-// When user picks a new category, always reset to page 1 to avoid landing
-// on an out-of-range page for the filtered subset.
-watch(selectedCategoryId, () => {
+// Changing the category or search term resets to page 1 so the viewer doesn't
+// end up stranded on a page that no longer exists for the filtered subset.
+watch([selectedCategoryId, debouncedSearch], () => {
     if (currentPage.value !== 1) currentPage.value = 1;
 });
 </script>
@@ -46,11 +55,19 @@ watch(selectedCategoryId, () => {
     <PublicLayout>
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <h1 class="text-2xl font-bold text-gray-900">Product catalog</h1>
-            <CategoryFilter
-                v-model="selectedCategoryId"
-                :categories="categories"
-                :disabled="productsLoading"
-            />
+            <div class="flex flex-wrap items-center gap-3">
+                <input
+                    v-model="searchInput"
+                    type="search"
+                    placeholder="Search by name…"
+                    class="w-64 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+                <CategoryFilter
+                    v-model="selectedCategoryId"
+                    :categories="categories"
+                    :disabled="productsLoading"
+                />
+            </div>
         </div>
 
         <div

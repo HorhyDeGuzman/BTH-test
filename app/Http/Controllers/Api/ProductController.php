@@ -20,7 +20,8 @@ class ProductController extends Controller
     /**
      * GET /api/products
      *
-     * List products with pagination and optional ?category_id filter.
+     * List products with pagination and optional ?category_id filter and
+     * ?search term (case-insensitive substring match on name).
      * Eager-loads the related category to avoid N+1.
      */
     public function index(Request $request): AnonymousResourceCollection
@@ -31,10 +32,12 @@ class ProductController extends Controller
         );
 
         $categoryId = $request->integer('category_id');
+        $search = trim((string) $request->string('search'));
 
         $products = Product::query()
             ->with('category')
             ->when($categoryId, fn ($query, $id) => $query->where('category_id', $id))
+            ->when($search !== '', fn ($query) => $query->where('name', 'ilike', "%{$search}%"))
             ->latest('id')
             ->paginate($perPage);
 

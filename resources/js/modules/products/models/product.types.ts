@@ -22,4 +22,5 @@ export interface ProductListParams {
     page?: number;
     per_page?: number;
     category_id?: number | null;
+    search?: string;
 }
