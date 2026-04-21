@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { extractApiError } from '@/modules/auth/helpers/api-error';
+import { extractApiError } from '@/common/helpers';
 import type { Category } from '../models';
 import { categoriesApi } from '../services/categories-api';
 

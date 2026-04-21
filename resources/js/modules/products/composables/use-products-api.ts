@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import type { Paginated, PaginationMeta } from '@/core/types';
 import type { Product, ProductListParams, ProductPayload } from '../models';
 import { productsApi } from '../services/products-api';
-import { extractApiError } from '@/modules/auth/helpers/api-error';
+import { extractApiError } from '@/common/helpers';
 
 /**
  * Composable wrapping productsApi with reactive loading / error / data state.
