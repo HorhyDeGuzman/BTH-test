@@ -7,6 +7,7 @@ use App\Http\Requests\Api\StoreProductRequest;
 use App\Http\Requests\Api\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -37,7 +38,10 @@ class ProductController extends Controller
         $products = Product::query()
             ->with('category')
             ->when($categoryId, fn ($query, $id) => $query->where('category_id', $id))
-            ->when($search !== '', fn ($query) => $query->where('name', 'ilike', "%{$search}%"))
+            ->when(
+                $search !== '',
+                fn ($query) => $query->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%']),
+            )
             ->latest('id')
             ->paginate($perPage);
 
@@ -57,13 +61,14 @@ class ProductController extends Controller
     /**
      * POST /api/products
      */
-    public function store(StoreProductRequest $request): ProductResource
+    public function store(StoreProductRequest $request): JsonResponse
     {
         $product = Product::create($request->validated());
         $product->load('category');
 
         return (new ProductResource($product))
-            ->additional([]);
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
